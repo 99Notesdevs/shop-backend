@@ -6,12 +6,13 @@ export class WishlistController {
     static async getWishlist(req: Request, res: Response) {
         try {
             logger.info('Fetching wishlist');
-            if(!req.body.authUser) {
-                logger.error('No user ID provided');
-                res.status(400).json({ success: false, message: 'No user ID provided' });
-            }
-            const userId = req.body.authUser;
-            const wishlist = await WishlistService.getWishlist(userId);
+            // if(!req.body.authUser) {
+            //     logger.error('No user ID provided');
+            //     res.status(400).json({ success: false, message: 'No user ID provided' });
+            // }
+            // const userId = req.body.authUser;
+            const userId = req.params.userId;
+            const wishlist = await WishlistService.getWishlist(Number(userId));
             if (!wishlist) {
                 logger.error('No wishlist found');
                 res.status(404).json({ success: false, message: 'No wishlist found' });
@@ -33,17 +34,20 @@ export class WishlistController {
     static async addItemToWishlist(req: Request, res: Response) {
         try {
             logger.info('Creating new wishlist');
-            if(!req.body.authUser) {
-                logger.error('No user ID provided');
-                res.status(400).json({ success: false, message: 'No user ID provided' });
-            }
-            const userId = req.body.authUser;
+            // if(!req.body.authUser) {
+            //     logger.error('No user ID provided');
+            //     res.status(400).json({ success: false, message: 'No user ID provided' });
+            // }
+            // const userId = req.body.authUser;
+            const userId = req.params.userId;
+
             if(!req.params.productId) {
                 logger.error('No product ID provided');
                 res.status(400).json({ success: false, message: 'No product ID provided' });
             }
+            console.log("here",req.params.productId);
             const productId = req.params.productId;
-            const newWishlist = await WishlistService.addItemToWishlist(userId, Number(productId));
+            const newWishlist = await WishlistService.addItemToWishlist(Number(userId), Number(productId));
             logger.info('Wishlist created successfully');
             res.status(201).json({success: true, data: newWishlist});
         } catch (error: unknown) {
@@ -61,17 +65,17 @@ export class WishlistController {
     static async removeItemFromWishlist(req: Request, res: Response) {
         try {
             logger.info(`Deleting wishlist with ID: ${req.params.productId}`);
-            if(!req.body.authUser) {
-                logger.error('No user ID provided');
-                res.status(400).json({ success: false, message: 'No user ID provided' });
-            }
-            const userId = req.body.authUser;
+            // if(!req.body.authUser) {
+            //     logger.error('No user ID provided');
+            //     res.status(400).json({ success: false, message: 'No user ID provided' });
+            // }
+            const userId = req.params.userId;
             if(!req.params.productId) {
                 logger.error('No product ID provided');
                 res.status(400).json({ success: false, message: 'No product ID provided' });
             }
             const productId = req.params.productId;
-            const deletedWishlist = await WishlistService.removeItemFromWishlist(userId,Number(productId));
+            const deletedWishlist = await WishlistService.removeItemFromWishlist(Number(userId),Number(productId));
             if (!deletedWishlist) {
                 logger.error(`Wishlist with ID ${productId} not found`);
                 res.status(404).json({ success: false, message: 'Wishlist not found' });

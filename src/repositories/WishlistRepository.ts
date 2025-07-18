@@ -17,6 +17,7 @@ export class WishlistRepository {
 
     static async addItemToWishlist(userId: number, productId: number) {
         logger.info('Adding item to wishlist in repository');
+        console.log("here",userId,productId);
         const wishlist = await prisma.wishList.update({
             where: { userId },
             data: {

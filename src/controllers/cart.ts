@@ -5,27 +5,48 @@ import { CartService } from '../services/CartService';
 export class CartController {
     static async getCartByUserId(req: Request, res: Response) {
         try {
-            if(!req.body.authUser) {
-                logger.error('No user ID provided');
-                res.status(400).json({ success: false, message: 'No user ID provided' });
+            // Get user ID from the request body (set by auth middleware)
+            console.log("reached in controller",req.body);
+            const userId = req.params.userId;
+            
+            if (!userId) {
+                logger.error('No user ID found in request');
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'Authentication required' 
+                });
             }
-            const userId = req.body.authUser;
+
             logger.info(`Fetching cart for user ${userId}`);
             const cart = await CartService.getCartByUserId(parseInt(userId));
+            
             if (!cart) {
-                logger.error('No cart found');
-                res.status(404).json({ success: false, message: 'No cart found' });
+                logger.info('No cart found for user');
+                return res.status(200).json({ 
+                    success: true, 
+                    data: { items: [] } 
+                });
             }
+            
             logger.info('Cart fetched successfully');
-            res.status(200).json({success: true, data: cart});
+            res.status(200).json({ 
+                success: true, 
+                data: cart 
+            });
+            
         } catch (error: unknown) {
-            if(error instanceof Error) {
+            if (error instanceof Error) {
                 logger.error(`Error fetching cart: ${error.message}`);
-                res.status(404).json({success:false, message: error.message });
-            }
-            else {
-                logger.error('Unexpected error fetching cart');
-                res.status(500).json({success: false, message: 'Internal server error' });
+                res.status(500).json({ 
+                    success: false, 
+                    message: error.message 
+                });
+            } else {
+                logger.error('Unknown error fetching cart');
+                res.status(500).json({ 
+                    success: false, 
+                    message: 'Internal server error' 
+                });
             }
         }
     }
@@ -33,10 +54,23 @@ export class CartController {
     static async addItemToCart(req: Request, res: Response) {
         try {
             const cartId = req.params.cartId;
-            const productId = req.params.productId;
-            const quantity = req.params.quantity;
-            logger.info(`Adding item to cart: ${cartId}`);
-            const cartItem = await CartService.addItemToCart(parseInt(cartId), parseInt(productId), parseInt(quantity));
+            const { productId, quantity } = req.query; // Get from query params
+            
+            if (!productId || !quantity) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'productId and quantity are required as query parameters' 
+                });
+            }
+            
+            logger.info(`Adding item to cart: ${cartId}, product: ${productId}, quantity: ${quantity}`);
+            
+            const cartItem = await CartService.addItemToCart(
+                parseInt(cartId), 
+                parseInt(productId as string), 
+                parseInt(quantity as string)
+            );
+            
             if (!cartItem) {
                 logger.error(`Item not found`);
                 res.status(404).json({ success: false, message: 'Item not found' });
@@ -57,6 +91,17 @@ export class CartController {
 
     static async updateCartItem(req: Request, res: Response) {
         try {
+            // Get user ID from the request body (set by auth middleware)
+            const userId = req.body.authUser;
+            
+            if (!userId) {
+                logger.error('No user ID found in request');
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'Authentication required' 
+                });
+            }
+
             const cartItemId = req.params.cartItemId;
             const productId = req.params.productId;
             const quantity = req.params.quantity;
@@ -78,6 +123,17 @@ export class CartController {
 
     static async removeCartItem(req: Request, res: Response) {
         try {
+            // Get user ID from the request body (set by auth middleware)
+            const userId = req.body.authUser;
+            
+            if (!userId) {
+                logger.error('No user ID found in request');
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'Authentication required' 
+                });
+            }
+
             const cartId = req.params.cartId;
             const cartItemId = req.params.cartItemId;
             logger.info(`Deleting cart item with ID: ${cartItemId}`);
@@ -102,6 +158,17 @@ export class CartController {
 
     static async clearCart(req: Request, res: Response) {
         try {
+            // Get user ID from the request body (set by auth middleware)
+            const userId = req.body.authUser;
+            
+            if (!userId) {
+                logger.error('No user ID found in request');
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'Authentication required' 
+                });
+            }
+
             const cartId = req.params.cartId;
             logger.info(`Deleting cart with ID: ${cartId}`);
             const deletedCart = await CartService.clearCart(parseInt(cartId));

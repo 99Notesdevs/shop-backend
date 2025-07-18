@@ -17,6 +17,7 @@ export class CartRepository {
 
     static async addItemToCart(cartId: number, productId: number, quantity: number) {
         logger.info('Adding item to cart for user repository');
+        console.log("cartId",cartId,"productId",productId,"quantity",quantity);
         const cart = await prisma.cart.update({
             where: { id: cartId },
             data: {

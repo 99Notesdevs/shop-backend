@@ -4,6 +4,11 @@ import main from "./routes/index";
 
 export const app = express();
 
+// 1. First parse the request body
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 2. Then handle CORS
 app.use(
   cors({
     origin: [
@@ -19,19 +24,6 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-// app.use(cors({
-//     origin: function (origin, callback) {
-//         if(!origin || !allowedOrigins.includes(origin)) {
-//             callback(null, true);
-//         } else {
-//             callback(new Error("Not allowed by CORS"));
-//         }
-//     },
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//     maxAge: 86400,
-// }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
+// 3. Then register routes
 app.use("/api/v1", main);

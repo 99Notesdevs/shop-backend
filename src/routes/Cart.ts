@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { CartController } from '../controllers/cart';
 import { authenticate } from '../middlewares/authenticateMiddleware';
+import { authorizeRoles } from '../middlewares/authorizeRoles';
 const cartRouter = Router();
 
 // Route to get cart by user ID
-cartRouter.get('/user', authenticate, CartController.getCartByUserId);
+cartRouter.get('/user/:userId', CartController.getCartByUserId);
 
 // Route to add item to cart ?productId & quantity
 cartRouter.post('/:cartId', CartController.addItemToCart);

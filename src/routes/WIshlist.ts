@@ -5,12 +5,12 @@ import { authenticate } from '../middlewares/authenticateMiddleware';
 const wishlistRouter = Router();
 
 // Route to get all categories
-wishlistRouter.get('/', authenticate , WishlistController.getWishlist);
+wishlistRouter.get('/:userId', WishlistController.getWishlist);
 
 // Route to add item to wishlist
-wishlistRouter.post('/:productId', authenticate , WishlistController.addItemToWishlist);
+wishlistRouter.post('/:productId/:userId', WishlistController.addItemToWishlist);
 
 // Route to remove item from wishlist
-wishlistRouter.delete('/:productId', authenticate , WishlistController.removeItemFromWishlist);
+wishlistRouter.delete('/:productId/:userId', WishlistController.removeItemFromWishlist);
 
 export default wishlistRouter;
