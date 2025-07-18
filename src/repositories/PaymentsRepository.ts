@@ -32,7 +32,8 @@ export class PaymentsRepository {
 
     static async createPayment(data: any) {
         logger.info("Entering createPayment repository method", { data });
-        const payment = await prisma.$transaction(async (tx) => {
+        const payment = await prisma.$transaction(async (tx: any) => {
+
             const payment = await tx.payment.create({
                 data: {
                     orderId: data.orderId,
@@ -54,7 +55,7 @@ export class PaymentsRepository {
                     paidUser: true,
                     validTill: new Date(Date.now() + data.validity * 24 * 60 * 60 * 1000),
                 }
-            }); 
+            });
             return payment;
         });
         logger.info("Exiting createPayment repository method");
@@ -63,7 +64,7 @@ export class PaymentsRepository {
 
     static async updatePayment({ transactionId, validity, status, userId }: { transactionId: string, validity: number, status: string, userId: number }) {
         logger.info("Entering updatePayment repository method");
-        const updatePayment = await prisma.$transaction(async (tx) => {
+        const updatePayment = await prisma.$transaction(async (tx: any) => {
             const payment = await tx.payment.updateMany({
                 where: { phonepe_transactionId: transactionId },
                 data: {
