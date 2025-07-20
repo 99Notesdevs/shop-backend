@@ -22,6 +22,24 @@ export class PaymentsController {
             }
         }
     }
+    static async initiatePaymentProduct(req: Request, res: Response) {
+        const paymentData = req.body;
+        const userId = req.body.authUser;
+        logger.info("Entering initiatePaymentProduct controller", { paymentData });
+        try {
+            const redirectUrl = await PaymentService.initiatePaymentProduct(paymentData, userId);
+            logger.info("Exiting initiatePaymentProduct controller", { redirectUrl });
+            res.status(200).json({ success: true, redirectUrl });
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in initiatePaymentProduct controller", error.message);
+                res.status(400).json({ success: false, message: error.message });
+            } else {
+                logger.error("Unknown error in initiatePaymentProduct controller");
+                res.status(500).json({ success: false, message: "Something went wrong in initiatePaymentProduct" });
+            }
+        }
+    }
 
     // static async handlePaymentCallback(req: Request, res: Response) {
     //     const { transactionId, state, responseCode } = req.query;

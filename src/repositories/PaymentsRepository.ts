@@ -61,6 +61,52 @@ export class PaymentsRepository {
         logger.info("Exiting createPayment repository method");
         return payment;
     }
+    static async createPaymentProduct(data: any) {
+        logger.info("Entering createPaymentProduct repository method", { data });
+        try {
+            const payment = await prisma.$transaction(async (tx: any) => {
+                // First, atomically decrement the stock and check if it's still positive
+                const updatedProduct = await tx.product.update({
+                    where: { 
+                        id: data.productId,
+                        stock: { gte: data.amount } // Ensures stock is still sufficient
+                    },
+                    data: {
+                        stock: { decrement: data.amount }
+                    }
+                });
+    
+                if (!updatedProduct) {
+                    throw new Error("Product stock not available or product not found");
+                }
+    
+                const payment = await tx.payment.create({
+                    data: {
+                        orderId: data.orderId,
+                        paymentMethod: data.paymentMethod,
+                        amount: data.amount,
+                        status: data.status,
+                        phonepe_transactionId: data.phonepe_transactionId,
+                        phonepe_signature: data.phonepe_signature,
+                        paymentDate: data.paymentDate,
+                        redirectUrl: data.redirectUrl
+                    }
+                });
+    
+                await tx.order.update({
+                    where: { id: data.orderId },
+                    data: { status: "COMPLETED" }
+                });
+    
+                return payment;
+            });
+            logger.info("Exiting createPaymentProduct repository method");
+            return payment;
+        } catch (error) {
+            logger.error("Error in createPaymentProduct", { error });
+            throw error;
+        }
+    }
 
     static async updatePayment({ transactionId, validity, status, userId }: { transactionId: string, validity: number, status: string, userId: number }) {
         logger.info("Entering updatePayment repository method");
