@@ -67,6 +67,7 @@ export class PaymentsRepository {
             const payment = await prisma.$transaction(async (tx: any) => {
                 // First, atomically decrement the stock and check if it's still positive
                 const updatedProduct = await tx.product.update({
+
                     where: { 
                         id: data.productId,
                         stock: { gte: data.amount } // Ensures stock is still sufficient
@@ -75,7 +76,6 @@ export class PaymentsRepository {
                         stock: { decrement: data.amount }
                     }
                 });
-    
                 if (!updatedProduct) {
                     throw new Error("Product stock not available or product not found");
                 }
@@ -92,18 +92,16 @@ export class PaymentsRepository {
                         redirectUrl: data.redirectUrl
                     }
                 });
-    
                 await tx.order.update({
                     where: { id: data.orderId },
-                    data: { status: "COMPLETED" }
+                    data: { status: "Completed" }
                 });
-    
                 return payment;
             });
             logger.info("Exiting createPaymentProduct repository method");
             return payment;
         } catch (error) {
-            logger.error("Error in createPaymentProduct", { error });
+            logger.error(`Error in createPaymentProduct ${error}`, { error });
             throw error;
         }
     }
