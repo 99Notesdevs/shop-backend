@@ -185,6 +185,7 @@ export class PaymentService {
         
         const paymentData = {
             orderId: data.orderId,
+            productId: data.productId,
             paymentMethod: "PHONEPE",
             amount: data.amount,
             status: "PENDING",

@@ -14,6 +14,7 @@ export interface IPayment {
 
 export interface IPayload {
     name: string;
+    productId: number;
     mobileNumber: string;
     amount: number;
     orderId: number;
