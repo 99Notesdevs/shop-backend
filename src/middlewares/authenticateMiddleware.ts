@@ -10,9 +10,9 @@ const secret = process.env.TOKEN_SECRET || '';
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     logger.info("Inside authenticate middleware");
     try {
-        const cookie = req.headers.authorization;
+        const cookie = req.cookies['token'];
         if (!cookie) throw new Error('No Cookie provided');
-        const token = cookie.split(' ')[1];
+        const token = cookie.trim();
         if(!token) throw new Error('No token provided');
 
         const authRepo = await AuthTokenRepository.getAuthToken(token);
