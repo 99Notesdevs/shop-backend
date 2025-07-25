@@ -100,6 +100,7 @@ export class PaymentsController {
     // }
 
     static async checkPaymentStatus(req: Request, res: Response) {
+        console.log("sending post request", req.query);
         const { id, val, uid } = req.query;
         const userId = uid;
         logger.info("Entering checkPaymentStatus controller", { id });

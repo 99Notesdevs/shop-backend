@@ -18,7 +18,7 @@ router.get("/healthCheck", async (req, res) => {
 router.use("/category", categoryRouter);
 router.use("/order", orderRouter);
 router.use("/product", productRouter);
-router.use("/payments", paymentsRouter);
+router.use("/payment", paymentsRouter);
 router.use("/cart", cartRouter);
 router.use("/wishlist", wishlistRouter);
 router.use("/shipping", shippingRouter);
