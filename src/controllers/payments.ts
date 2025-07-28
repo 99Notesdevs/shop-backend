@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/PaymentService";
 import logger from "../utils/logger";
-import { userLoginValidation } from "../validations/user.validation";
 
 export class PaymentsController {
     static async initiatePayment(req: Request, res: Response) {
@@ -11,7 +10,7 @@ export class PaymentsController {
         try {
             const redirectUrl = await PaymentService.initiatePayment(paymentData, userId);
             logger.info("Exiting initiatePayment controller", { redirectUrl });
-            res.status(200).json({ success: true, redirectUrl });
+            res.status(200).json({ success: true, data: redirectUrl });
         } catch (error: unknown) {
             if (error instanceof Error) {
                 logger.error("Error in initiatePayment controller", error.message);
@@ -29,7 +28,7 @@ export class PaymentsController {
         try {
             const redirectUrl = await PaymentService.initiatePaymentProduct(paymentData, userId);
             logger.info("Exiting initiatePaymentProduct controller", { redirectUrl });
-            res.status(200).json({ success: true, redirectUrl });
+            res.status(200).json({ success: true, data: redirectUrl });
         } catch (error: unknown) {
             if (error instanceof Error) {
                 logger.error("Error in initiatePaymentProduct controller", error.message);
