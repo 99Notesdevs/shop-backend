@@ -7,6 +7,7 @@ import cartRouter from "./Cart";
 import wishlistRouter from "./WIshlist";
 import shippingRouter from "./Shipping";
 import addressRouter from "./Address";
+import productRatingRouter from "./productRating";
 const router = Router();
 
 // health check api
@@ -23,4 +24,5 @@ router.use("/cart", cartRouter);
 router.use("/wishlist", wishlistRouter);
 router.use("/shipping", shippingRouter);
 router.use("/address", addressRouter);
+router.use("/productRating", productRatingRouter);
 export default router;
