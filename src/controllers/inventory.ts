@@ -12,7 +12,7 @@ export class InventoryController {
                 throw new Error('No inventories found');
             }
             logger.info('Inventories fetched successfully');
-            res.status(200).json({ success: true, inventories });
+            res.status(200).json({ success: true, data: inventories });
         } catch(error: unknown) {
             if(error instanceof Error) {
                 logger.error(error.message);
@@ -35,7 +35,7 @@ export class InventoryController {
                 throw new Error('Inventory not found');
             }
             logger.info('Inventory fetched successfully');
-            res.status(200).json({ success: true, inventory });
+            res.status(200).json({ success: true, data: inventory });
         } catch(error: unknown) {
             if(error instanceof Error) {
                 logger.error(error.message);
@@ -59,7 +59,7 @@ export class InventoryController {
                 throw new Error('Inventory not found');
             }
             logger.info('Inventory updated successfully');
-            res.status(200).json({ success: true, updatedInventory });
+            res.status(200).json({ success: true, data: updatedInventory });
         } catch(error: unknown) {
             if(error instanceof Error) {
                 logger.error(error.message);

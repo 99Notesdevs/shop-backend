@@ -7,7 +7,7 @@ export class AddressController {
         try {
             const userId = req.body.authUser; // Assuming user is attached by auth middleware
             if (!userId) {
-                return res.status(401).json({ error: 'Unauthorized' });
+                return res.status(401).json({ success: false, error: 'Unauthorized' });
             }
             
             // Extract only the fields that belong to the Address model
@@ -31,7 +31,7 @@ export class AddressController {
             });
         } catch (error: any) {
             logger.error('Error creating address:', error);
-            res.status(400).json({ error: error.message || 'Failed to create address' });
+            res.status(400).json({ success: false, error: error.message || 'Failed to create address' });
         }
     }
 
@@ -39,7 +39,7 @@ export class AddressController {
         try {
             const userId = req.params.userId;
             if (!userId) {
-                return res.status(401).json({ error: 'Unauthorized' });
+                return res.status(401).json({ success: false, error: 'Unauthorized' });
             }
 
             const addresses = await AddressService.getUserAddresses(Number(userId));
@@ -49,7 +49,7 @@ export class AddressController {
             });
         } catch (error: any) {
             logger.error('Error fetching user addresses:', error);
-            res.status(500).json({ error: 'Failed to fetch addresses' });
+            res.status(500).json({ success: false, error: 'Failed to fetch addresses' });
         }
     }
 
@@ -59,10 +59,10 @@ export class AddressController {
             const addressId = parseInt(req.params.id);
             
             if (!userId) {
-                return res.status(401).json({ error: 'Unauthorized' });
+                return res.status(401).json({ success: false, error: 'Unauthorized' });
             }
             if (isNaN(addressId)) {
-                return res.status(400).json({ error: 'Invalid address ID' });
+                return res.status(400).json({ success: false, error: 'Invalid address ID' });
             }
 
             // Only allow updating specific fields
@@ -84,7 +84,7 @@ export class AddressController {
             });
         } catch (error: any) {
             logger.error('Error updating address:', error);
-            res.status(400).json({ error: error.message || 'Failed to update address' });
+            res.status(400).json({ success: false, error: error.message || 'Failed to update address' });
         }
     }
 
@@ -104,7 +104,7 @@ export class AddressController {
             res.status(204).send();
         } catch (error: any) {
             logger.error('Error deleting address:', error);
-            res.status(400).json({ error: error.message || 'Failed to delete address' });
+            res.status(400).json({ success: false, error: error.message || 'Failed to delete address' });
         }
     }
 
@@ -114,10 +114,10 @@ export class AddressController {
             const orderId = parseInt(req.params.orderId);
             
             if (!userId) {
-                return res.status(401).json({ error: 'Unauthorized' });
+                return res.status(401).json({ success: false, error: 'Unauthorized' });
             }
             if (isNaN(orderId)) {
-                return res.status(400).json({ error: 'Invalid order ID' });
+                return res.status(400).json({ success: false, error: 'Invalid order ID' });
             }
 
             const addresses = await AddressService.getOrderAddresses(userId, orderId);
@@ -127,7 +127,7 @@ export class AddressController {
             });
         } catch (error: any) {
             logger.error('Error fetching order addresses:', error);
-            res.status(400).json({ error: error.message || 'Failed to fetch order addresses' });
+            res.status(400).json({ success: false, error: error.message || 'Failed to fetch order addresses' });
         }
     }
 }

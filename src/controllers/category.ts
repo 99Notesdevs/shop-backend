@@ -9,7 +9,7 @@ export class CategoryController {
             const categories = await CategoryService.getCategories();
             if (!categories) {
                 logger.error('No categories found');
-                res.status(404).json({ success: false, message: 'No categories found' });
+                throw new Error('No categories found');
             }
             logger.info('Categories fetched successfully');
             res.status(200).json({success: true, data: categories});
@@ -32,7 +32,7 @@ export class CategoryController {
             const category = await CategoryService.getCategoryById(parseInt(categoryId));
             if (!category) {
                 logger.error(`Category with ID ${categoryId} not found`);
-                res.status(404).json({ success: false, message: 'Category not found' });
+                throw new Error('Category not found');
             }
             logger.info('Category fetched successfully');
             res.status(200).json({success: true, data: category});
@@ -79,7 +79,7 @@ export class CategoryController {
             const updateCategory = await CategoryService.updateCategory(parseInt(categoryId), data);
             if (!updateCategory) {
                 logger.error(`Category with ID ${categoryId} not found`);
-                res.status(404).json({ success: false, message: 'Category not found' });
+                throw new Error('Category not found');
             }
             logger.info('Category deleted successfully');
             res.status(200).json({success: true, data: updateCategory});
@@ -102,7 +102,7 @@ export class CategoryController {
             const deletedCategory = await CategoryService.deleteCategory(parseInt(categoryId));
             if (!deletedCategory) {
                 logger.error(`Category with ID ${categoryId} not found`);
-                res.status(404).json({ success: false, message: 'Category not found' });
+                throw new Error('Category not found');
             }
             logger.info('Category deleted successfully');
             res.status(200).json({success: true, data: deletedCategory});
