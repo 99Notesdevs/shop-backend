@@ -25,6 +25,18 @@ export class OrderRepository {
         return order;
     }
 
+    // Get user orders
+    static async getUserOrders(userId: number) {
+        logger.info("Entering getUserOrders repository", { userId });
+
+        const orders = await prisma.order.findMany({
+            where: { userId },
+        });
+
+        logger.info("Exiting getUserOrders repository", { userId });
+        return orders;
+    }
+
     // Create a new order
     static async createOrder(data: IOrder) {
         logger.info("Creating new order in repository");

@@ -37,6 +37,20 @@ export class OrderService {
         return order;
     }
 
+    // Get user orders
+    static async getUserOrders(userId: number) {
+        logger.info("Entering getUserOrders service", { userId });
+
+        const orders = await OrderRepository.getUserOrders(userId);
+        if (!orders) {
+            logger.warn("User orders not found in service", { userId });
+            return null;
+        }
+
+        logger.info("Exiting getUserOrders service", { userId });
+        return orders;
+    }
+
     // Update an existing order
     static async updateOrder(id: number, orderDetails: any) {
         logger.info("Entering updateOrder service", { orderId: id, orderDetails });

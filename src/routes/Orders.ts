@@ -8,7 +8,7 @@ const orderRouter = Router();
 orderRouter.get("/", OrderController.getAllOrders);
 orderRouter.get("/:id", OrderController.getOrderById);
 orderRouter.get('/track/:id', OrderController.trackOrder);
-
+orderRouter.get('/user/:userId', OrderController.getUserOrders);
 orderRouter.post("/", authenticate, authorizeRoles(["User"]), OrderController.createOrder);
 
 orderRouter.put("/:id", OrderController.updateOrder);

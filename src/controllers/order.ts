@@ -42,6 +42,24 @@ export class OrderController {
         }
     }
 
+    // Get user orders
+    static async getUserOrders(req: Request, res: Response) {
+        try {
+            const { userId } = req.params;
+            const orders = await OrderService.getUserOrders(Number(userId));
+            logger.info("User orders retrieved successfully", { userId });
+            res.status(200).json({ success: true, data: orders });
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in getUserOrders controller", error.message);
+                res.status(500).json({ success: false, message: error.message });
+            } else {
+                logger.error("Unknown error in getUserOrders controller");
+                res.status(500).json({ success: false, message: "Something went wrong in getUserOrders" });
+            }
+        }
+    }
+
     // Create a new order
     static async createOrder(req: Request, res: Response) {
         try {
