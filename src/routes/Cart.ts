@@ -11,7 +11,7 @@ cartRouter.get('/user/:userId', CartController.getCartByUserId);
 cartRouter.post('/:cartId', CartController.addItemToCart);
 
 // Route to update item in cart ?productId & quantity
-cartRouter.put('/:cartItemId', CartController.updateCartItem);
+cartRouter.put('/:cartItemId',authenticate,authorizeRoles(["User"]), CartController.updateCartItem);
 
 // Route to remove item from cart
 cartRouter.delete('/:cartId/:cartItemId', CartController.removeCartItem);

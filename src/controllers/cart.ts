@@ -103,10 +103,15 @@ export class CartController {
             }
 
             const cartItemId = req.params.cartItemId;
-            const productId = req.params.productId;
-            const quantity = req.params.quantity;
+            const quantity = req.query.quantity as string;
+            if (!quantity) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'quantity is required as query parameter' 
+                });
+            }
             logger.info('Updating cart item');
-            const updatedCartItem = await CartService.updateCartItem(parseInt(cartItemId), parseInt(productId), parseInt(quantity));
+            const updatedCartItem = await CartService.updateCartItem(parseInt(cartItemId), parseInt(quantity));
             logger.info('Cart item updated successfully');
             res.status(201).json({success: true, data: updatedCartItem});
         } catch (error: unknown) {
