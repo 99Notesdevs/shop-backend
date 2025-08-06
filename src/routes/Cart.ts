@@ -14,7 +14,7 @@ cartRouter.post('/:cartId', CartController.addItemToCart);
 cartRouter.put('/:cartItemId',authenticate,authorizeRoles(["User"]), CartController.updateCartItem);
 
 // Route to remove item from cart
-cartRouter.delete('/:cartId/:cartItemId', CartController.removeCartItem);
+cartRouter.delete('/:cartId/:cartItemId',authenticate,authorizeRoles(["User"]), CartController.removeCartItem);
 
 // Route to clear cart
 cartRouter.delete('/:cartId', CartController.clearCart);

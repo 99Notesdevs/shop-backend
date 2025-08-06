@@ -189,6 +189,7 @@ export class PaymentService {
             paymentMethod: "PHONEPE",
             amount: data.amount,
             status: "PENDING",
+            quantity: data.quantity,
             phonepe_transactionId: transactionId,
             phonepe_signature: checksum,
             paymentDate: new Date(),

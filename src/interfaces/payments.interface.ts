@@ -19,6 +19,7 @@ export interface IPayload {
     amount: number;
     orderId: number;
     validity?: number;
+    quantity?: number;
     phonepe_transaction_id?: string;
     status?: string;
     redirectUrl?: string;

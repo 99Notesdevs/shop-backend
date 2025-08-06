@@ -67,13 +67,12 @@ export class PaymentsRepository {
             const payment = await prisma.$transaction(async (tx: any) => {
                 // First, atomically decrement the stock and check if it's still positive
                 const updatedProduct = await tx.product.update({
-
                     where: { 
                         id: data.productId,
-                        stock: { gte: data.amount } // Ensures stock is still sufficient
+                        stock: { gte: data.quantity } // Ensures stock is still sufficient
                     },
                     data: {
-                        stock: { decrement: data.amount }
+                        stock: { decrement: data.quantity }
                     }
                 });
                 if (!updatedProduct) {
