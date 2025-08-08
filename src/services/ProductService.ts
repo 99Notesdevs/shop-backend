@@ -3,7 +3,7 @@ import logger from "../utils/logger";
 
 export class ProductService {
     // Create a new product
-    static async createProduct(data: { name: string; description: string; price: number; stock: number; imageUrl?: string; categoryId: number, validity?: number }) {
+    static async createProduct(data: { name: string; description: string; price: number; stock: number; imageUrl?: string; salePrice: number; categoryId: number, validity?: number }) {
         logger.info("Entering createProduct service", { name: data.name, categoryId: data.categoryId });
 
         const category = await ProductRepository.findCategoryById(data.categoryId);
@@ -43,7 +43,7 @@ export class ProductService {
     }
 
     // Update a product by ID
-    static async updateProduct(id: number, data: { name?: string; description?: string; price?: number; stock?: number; imageUrl?: string; categoryId?: number }) {
+    static async updateProduct(id: number, data: { name?: string; description?: string; price?: number; stock?: number; imageUrl?: string; salePrice: number; categoryId?: number }) {
         logger.info("Entering updateProduct service", { productId: id, data });
 
         const product = await ProductRepository.findProductById(id);

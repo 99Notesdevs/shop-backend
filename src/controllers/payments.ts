@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/PaymentService";
 import logger from "../utils/logger";
+import { EmailService } from "../utils/EmailService";
 
 export class PaymentsController {
     static async initiatePayment(req: Request, res: Response) {

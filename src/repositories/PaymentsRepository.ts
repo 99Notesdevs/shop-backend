@@ -61,24 +61,47 @@ export class PaymentsRepository {
         logger.info("Exiting createPayment repository method");
         return payment;
     }
+
     static async createPaymentProduct(data: any) {
         logger.info("Entering createPaymentProduct repository method", { data });
         try {
             const payment = await prisma.$transaction(async (tx: any) => {
-                // First, atomically decrement the stock and check if it's still positive
-                const updatedProduct = await tx.product.update({
-                    where: { 
-                        id: data.productId,
-                        stock: { gte: data.quantity } // Ensures stock is still sufficient
-                    },
-                    data: {
-                        stock: { decrement: data.quantity }
+                // First, get all order items for this order
+                const orderItems = await tx.orderItem.findMany({
+                    where: { orderId: data.orderId },
+                    include: {
+                        product: {
+                            select: { id: true, stock: true }
+                        }
                     }
                 });
-                if (!updatedProduct) {
-                    throw new Error("Product stock not available or product not found");
+
+                if (!orderItems || orderItems.length === 0) {
+                    throw new Error("No items found in the order");
                 }
-    
+
+                // Check stock and update each product
+                for (const item of orderItems) {
+                    if (!item.product || item.product.stock < item.quantity) {
+                        throw new Error(`Insufficient stock for product ID: ${item.productId}`);
+                    }
+
+                    const updatedProduct = await tx.product.update({
+                        where: { 
+                            id: item.productId,
+                            stock: { gte: item.quantity }
+                        },
+                        data: {
+                            stock: { decrement: item.quantity }
+                        }
+                    });
+
+                    if (!updatedProduct) {
+                        throw new Error(`Failed to update stock for product ID: ${item.productId}`);
+                    }
+                }
+
+                // Create the payment record
                 const payment = await tx.payment.create({
                     data: {
                         orderId: data.orderId,
@@ -91,12 +114,16 @@ export class PaymentsRepository {
                         redirectUrl: data.redirectUrl
                     }
                 });
+
+                // Update order status
                 await tx.order.update({
                     where: { id: data.orderId },
                     data: { status: "Completed" }
                 });
+
                 return payment;
             });
+            
             logger.info("Exiting createPaymentProduct repository method");
             return payment;
         } catch (error) {

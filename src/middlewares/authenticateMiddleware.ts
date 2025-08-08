@@ -10,11 +10,12 @@ const secret = process.env.TOKEN_SECRET || '';
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     logger.info("Inside authenticate middleware");
     try {
+        console.log("cookies",req.cookies);
         const cookie = req.cookies['token'];
         if (!cookie) throw new Error('No Cookie provided');
         const token = cookie.trim();
         if(!token) throw new Error('No token provided');
-
+        console.log("token",token);
         const authRepo = await AuthTokenRepository.getAuthToken(token);
         if (!authRepo) throw new Error('Cannot get token');
         const type = authRepo.type;

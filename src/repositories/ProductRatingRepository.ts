@@ -27,7 +27,9 @@ export class ProductRatingRepository {
 
     static async createProductRating(productId: number, userId: number, rating: number) {
         logger.info("Entering createProductRating repository method");
-        
+        console.log("productId", productId);
+        console.log("userId", userId);
+        console.log("rating", rating);
         // First, try to find if a rating already exists
         const existingRating = await prisma.productRating.findFirst({
             where: {
@@ -35,7 +37,7 @@ export class ProductRatingRepository {
                 userId
             }
         });
-    
+        console.log("existingRating", existingRating);
         let createdProductRating;
         
         if (existingRating) {
@@ -58,7 +60,7 @@ export class ProductRatingRepository {
                 }
             });
         }
-        
+        console.log("createdProductRating", createdProductRating);
         logger.info("Exiting createProductRating repository method");
         return createdProductRating;
     }

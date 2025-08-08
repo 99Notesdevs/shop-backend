@@ -66,6 +66,7 @@ export class OrderController {
             const orderData = req.body;
             const data = {
                 orderDate: new Date(orderData.orderDate),
+                products: orderData.products,
                 totalAmount: parseFloat(orderData.totalAmount),
                 status: orderData.status,
                 userId: parseInt(req.body.authUser) || parseInt(orderData.userId),

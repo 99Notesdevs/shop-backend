@@ -25,10 +25,15 @@ export class ProductRatingController {
     }
     static async createProductRating(req: Request, res: Response) {
         try {
+            console.log("req.body", req.body);
             const userId=req.body.authUser;
             const { productId } = req.params;
             const {rating} = req.body;
+            console.log("userId", userId);
+            console.log("productId", productId);
+            console.log("rating", rating);
             const productRatings = await ProductRatingService.createProductRating(Number(productId), Number(userId), Number(rating));
+            console.log("productRatings", productRatings);
             res.json({success:true,data:productRatings});
         } catch (error) {
             logger.error("Error in createProductRating controller: ", error);

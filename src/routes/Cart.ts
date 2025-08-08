@@ -17,6 +17,6 @@ cartRouter.put('/:cartItemId',authenticate,authorizeRoles(["User"]), CartControl
 cartRouter.delete('/:cartId/:cartItemId',authenticate,authorizeRoles(["User"]), CartController.removeCartItem);
 
 // Route to clear cart
-cartRouter.delete('/:cartId', CartController.clearCart);
+cartRouter.delete('/:cartId',authenticate,authorizeRoles(["User"]), CartController.clearCart);
 
 export default cartRouter;

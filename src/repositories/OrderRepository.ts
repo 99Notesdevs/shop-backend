@@ -1,3 +1,4 @@
+import { error } from "console";
 import { prisma } from "../config/prisma";
 import { IOrder, OrderStatus } from "../interfaces/orders.interface";
 import logger from "../utils/logger";
@@ -38,8 +39,10 @@ export class OrderRepository {
     }
 
     // Create a new order
-    static async createOrder(data: IOrder) {
+    static async createOrder(data: IOrder & { products: Array<{ orderId: number; productId: number; quantity: number; price: number, product: { price: number } }> }) {
         logger.info("Creating new order in repository");
+        
+        // First, create the order
         const order = await prisma.order.create({
             data: {
                 orderDate: new Date(data.orderDate),
@@ -49,9 +52,21 @@ export class OrderRepository {
                 shippingAddress: data.shippingAddressId ? { connect: { id: data.shippingAddressId } } : undefined,
                 user: {
                     connect: { id: data.userId },
-                },
+                }
             }
         });
+        console.log("order",data.products);
+        await prisma.orderItem.createMany({
+            data: data.products.map(item => ({
+              orderId: order.id,
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.product.price
+            }))
+          });
+          
+          
+        
         logger.info("Created new order in repository", { orderId: order.id });
         return order;
     }

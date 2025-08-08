@@ -198,6 +198,7 @@ export class PaymentService {
             const response = await axios.request(options);
             const url = response.data.data.instrumentResponse.redirectInfo.url;
             data.redirectUrl = url;
+            console.log("We are here");
             console.log(data.redirectUrl,"data.redirectUrl");
             const newPayment = await PaymentsRepository.createPaymentProduct({...paymentData, redirectUrl: url});
             logger.info("Exiting initiatePaymentProduct service", { paymentId: newPayment.id });
