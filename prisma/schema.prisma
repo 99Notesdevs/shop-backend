@@ -521,7 +521,7 @@ model Product {
   name        String
   description String
   price       Float
-  salePrice   Float
+  salePrice   Float?
   stock       Int
   imageUrl    String?
   categoryId  Int
