@@ -526,7 +526,7 @@ model Product {
   imageUrl    String?
   categoryId  Int
   shippingCharges Float @default(50)
-  type OrderType @default("softCopy")
+  type ProductType @default(softCopy)
   validity    Int?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -745,7 +745,7 @@ enum OrderType {
   Books
   Notes
 }
-enum OrderType {
+enum ProductType {
   softCopy
   hardCopy
 }
