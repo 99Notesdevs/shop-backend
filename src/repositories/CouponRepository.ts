@@ -17,6 +17,22 @@ export class CouponRepository {
             }
         }
     }
+    static async findCouponByType(code: string) {
+        logger.info("Entering findCouponByType repository", { code });
+        try {
+            const coupon = await prisma.coupon.findUnique({ where: { code } });
+            logger.info("Exiting findCouponByType repository", { coupon });
+            return coupon;
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in findCouponByType repository", error.message);
+                throw error;
+            } else {
+                logger.error("Unknown error in findCouponByType repository");
+                throw new Error("Something went wrong in findCouponByType");
+            }
+        }
+    }
     static async findAllCoupons() {
         logger.info("Entering findAllCoupons repository");
         try {

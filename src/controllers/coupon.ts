@@ -35,6 +35,22 @@ export class CouponController {
             }
         }
     }
+    static async getCouponByType(req: Request, res: Response) {
+        logger.info("Entering getCouponByType controller", { req });
+        try {
+            const coupon = await CouponService.getCouponByType(req.params.code);
+            logger.info("Exiting getCouponByType controller", { coupon });
+            res.status(200).json({ success: true, data: coupon });
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in getCouponByType controller", error.message);
+                res.status(400).json({ success: false, message: error.message });
+            } else {
+                logger.error("Unknown error in getCouponByType controller");
+                res.status(500).json({ success: false, message: "Something went wrong in getCouponByType" });
+            }
+        }
+    }
     static async getCouponById(req: Request, res: Response) {
         logger.info("Entering getCouponById controller", { req });
         try {

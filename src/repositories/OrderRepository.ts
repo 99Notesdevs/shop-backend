@@ -31,7 +31,7 @@ export class OrderRepository {
         logger.info("Entering getUserOrders repository", { userId });
 
         const orders = await prisma.order.findMany({
-            where: { userId },
+            where: { userId ,status: "Completed"},
         });
 
         logger.info("Exiting getUserOrders repository", { userId });

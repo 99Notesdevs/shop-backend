@@ -18,6 +18,22 @@ export class CouponService {
             }
         }
     }
+    static async getCouponByType(code: string) {
+        logger.info("Entering getCouponByType service", { code });
+        try {
+            const coupon = await CouponRepository.findCouponByType(code);
+            logger.info("Exiting getCouponByType service", { coupon });
+            return coupon;
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in getCouponByType service", error.message);
+                throw error;
+            } else {
+                logger.error("Unknown error in getCouponByType service");
+                throw new Error("Something went wrong in getCouponByType");
+            }
+        }
+    }
     static async getAllCoupons() {
         logger.info("Entering getAllCoupons service");
         try {
