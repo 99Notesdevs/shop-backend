@@ -3,7 +3,7 @@ import logger from "../utils/logger";
 
 export class ProductRepository {
     // Create a new product
-    static async createProduct(data: { name: string; description: string; price: number; stock: number; imageUrl?: string; salePrice: number; categoryId: number, validity?: number }) {
+    static async createProduct(data: { name: string; description: string; price: number; stock: number; imageUrl?: string; salePrice: number; categoryId: number, validity?: number, type: string }) {
         logger.info("Entering createProduct repository method", { name: data.name, categoryId: data.categoryId });
 
         const newProduct = await prisma.product.create({
@@ -18,6 +18,7 @@ export class ProductRepository {
                 category: {
                     connect: { id: data.categoryId },
                 },
+                type: data.type,
             },
         });
 
@@ -54,7 +55,7 @@ export class ProductRepository {
     }
 
     // Update a product by ID
-    static async updateProduct(id: number, data: { name?: string; description?: string; price?: number; stock?: number; imageUrl?: string; salePrice: number; categoryId?: number }) {
+    static async updateProduct(id: number, data: { name?: string; description?: string; price?: number; stock?: number; imageUrl?: string; salePrice: number; categoryId?: number, validity?: number, type?: string }) {
         logger.info("Entering updateProduct repository method", { productId: id, data });
 
         const updatedProduct = await prisma.product.update({

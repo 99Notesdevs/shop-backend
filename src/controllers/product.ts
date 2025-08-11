@@ -6,7 +6,7 @@ export class ProductController {
     // Create a new product
     static async createProduct(req: Request, res: Response) {
         try {
-            const { name, description, price, stock, imageUrl, categoryId, validity, salePrice } = req.body;
+            const { name, description, price, stock, imageUrl, categoryId, validity, salePrice, type } = req.body;
 
             if (!name || !description || !price || !stock || !categoryId) {
                 throw new Error("All required fields (name, description, price, stock, categoryId) must be provided");
@@ -21,6 +21,7 @@ export class ProductController {
                 categoryId: parseInt(categoryId),
                 validity: validity ? parseInt(validity) : undefined,
                 salePrice: parseFloat(salePrice),
+                type,
             });
 
             logger.info("Product created successfully", { productId: newProduct.id });
@@ -85,7 +86,7 @@ export class ProductController {
     static async updateProduct(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const { name, description, price, stock, imageUrl, categoryId, salePrice } = req.body;
+            const { name, description, price, stock, imageUrl, categoryId, salePrice, type } = req.body;
 
             if (!id) {
                 throw new Error("Product ID is required");
@@ -99,6 +100,7 @@ export class ProductController {
                 imageUrl,
                 categoryId: categoryId ? parseInt(categoryId) : undefined,
                 salePrice: parseFloat(salePrice),
+                type,
             });
 
             logger.info("Product updated successfully", { productId: updatedProduct.id });
