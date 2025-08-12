@@ -1,9 +1,10 @@
 import { ProductRepository } from "../repositories/ProductRepository";
 import logger from "../utils/logger";
 
+export type ProductType = 'softCopy' | 'hardCopy';
 export class ProductService {
     // Create a new product
-    static async createProduct(data: { name: string; description: string; price: number; stock: number; imageUrl?: string; salePrice: number; categoryId: number, validity?: number, type: string }) {
+    static async createProduct(data: { name: string; description: string; price: number; stock: number; imageUrl?: string; salePrice: number; categoryId: number, validity?: number, type: ProductType }) {
         logger.info("Entering createProduct service", { name: data.name, categoryId: data.categoryId });
 
         const category = await ProductRepository.findCategoryById(data.categoryId);
@@ -43,7 +44,7 @@ export class ProductService {
     }
 
     // Update a product by ID
-    static async updateProduct(id: number, data: { name?: string; description?: string; price?: number; stock?: number; imageUrl?: string; salePrice: number; categoryId?: number, validity?: number, type?: string }) {
+    static async updateProduct(id: number, data: { name?: string; description?: string; price?: number; stock?: number; imageUrl?: string; salePrice: number; categoryId?: number, validity?: number, type: ProductType }) {
         logger.info("Entering updateProduct service", { productId: id, data });
 
         const product = await ProductRepository.findProductById(id);

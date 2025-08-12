@@ -395,6 +395,7 @@ model About99Notes {
   id        Int      @id @default(autoincrement())
   title     String
   content   String
+  ty
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

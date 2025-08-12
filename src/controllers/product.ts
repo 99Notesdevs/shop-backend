@@ -8,8 +8,8 @@ export class ProductController {
         try {
             const { name, description, price, stock, imageUrl, categoryId, validity, salePrice, type } = req.body;
 
-            if (!name || !description || !price || !stock || !categoryId) {
-                throw new Error("All required fields (name, description, price, stock, categoryId) must be provided");
+            if (!name || !description || !price || !stock || !categoryId || !type) {
+                throw new Error("All required fields (name, description, price, stock, categoryId, type) must be provided");
             }
 
             const newProduct = await ProductService.createProduct({
