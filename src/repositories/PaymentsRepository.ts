@@ -100,13 +100,13 @@ export class PaymentsRepository {
                         throw new Error(`Failed to update stock for product ID: ${item.productId}`);
                     }
                 }
-
+                const amount = orderItems.reduce((total: number, item: any) => total + item.product.price * item.quantity, 0);
                 // Create the payment record
                 const payment = await tx.payment.create({
                     data: {
                         orderId: data.orderId,
                         paymentMethod: data.paymentMethod,
-                        amount: data.amount,
+                        amount: amount,
                         status: data.status,
                         phonepe_transactionId: data.phonepe_transactionId,
                         phonepe_signature: data.phonepe_signature,
@@ -120,7 +120,7 @@ export class PaymentsRepository {
                     where: { id: data.orderId },
                     data: { status: "Completed" }
                 });
-
+                
                 return payment;
             });
             

@@ -395,7 +395,6 @@ model About99Notes {
   id        Int      @id @default(autoincrement())
   title     String
   content   String
-  ty
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -541,7 +540,13 @@ model Product {
 
   @@index([name])
 }
-
+model Offers  {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 model ProductRating {
   id          Int      @id @default(autoincrement())
   userId      Int      

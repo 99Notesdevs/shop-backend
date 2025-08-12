@@ -25,6 +25,7 @@ export class PaymentsController {
     static async initiatePaymentProduct(req: Request, res: Response) {
         const paymentData = req.body;
         const userId = req.body.authUser;
+        
         logger.info("Entering initiatePaymentProduct controller", { paymentData });
         try {
             const redirectUrl = await PaymentService.initiatePaymentProduct(paymentData, userId);

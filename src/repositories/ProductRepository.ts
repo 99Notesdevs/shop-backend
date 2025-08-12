@@ -119,4 +119,20 @@ export class ProductRepository {
         logger.info("Exiting findCategoryById repository method", { categoryId });
         return category;
     }
+    static async search(query: string) {
+        logger.info("Entering search repository method", { query });
+
+        const products = await prisma.product.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: "insensitive" } },
+                    { description: { contains: query, mode: "insensitive" } },
+                    { category: { name: { contains: query, mode: "insensitive" } } }
+                ]
+            }
+        });
+
+        logger.info("Exiting search repository method");
+        return products;
+    }
 }
