@@ -100,8 +100,11 @@ export class PaymentsRepository {
                         throw new Error(`Failed to update stock for product ID: ${item.productId}`);
                     }
                 }
-                const amount = orderItems.reduce((total: number, item: any) => total + item.product.price * item.quantity, 0);
+                console.log(orderItems,"orderItems");
+                const amount = orderItems.reduce((total: number, item: any) => total + item.price * item.quantity, 0);
                 // Create the payment record
+                console.log(amount,"amount");
+                console.log(data.redirectUrl,"data.redirectUrl in repositroy");
                 const payment = await tx.payment.create({
                     data: {
                         orderId: data.orderId,
