@@ -107,7 +107,23 @@ export class OrderRepository {
         logger.info(`Fetched tracking info for order with id ${id} from repository`);
         return trackingInfo;
     }
-
+    static async getorderitems(id: number) {
+        logger.info(`Fetching order items for order with id ${id} from repository`);
+        const orderItems = await prisma.orderItem.findMany({
+            where: { orderId: id },
+            include: {
+                product: {
+                    select: { id: true, stock: true,salePrice: true, shippingCharges: true }
+                }
+            }
+        });
+        if (!orderItems) {
+            logger.error(`Order items for order with id ${id} not found`);
+            return null;
+        }
+        logger.info(`Fetched order items for order with id ${id} from repository`);
+        return orderItems;
+    }
     // Delete an order by ID
     static async deleteOrder(id: number) {
         logger.info(`Deleting order with id ${id} from repository`);
