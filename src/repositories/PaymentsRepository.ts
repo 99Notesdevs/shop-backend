@@ -71,7 +71,7 @@ export class PaymentsRepository {
                     where: { orderId: data.orderId },
                     include: {
                         product: {
-                            select: { id: true, stock: true }
+                            select: { id: true, stock: true,salePrice: true, shippingCharges: true }
                         }
                     }
                 });
@@ -100,13 +100,15 @@ export class PaymentsRepository {
                         throw new Error(`Failed to update stock for product ID: ${item.productId}`);
                     }
                 }
-                const amount = orderItems.reduce((total: number, item: any) => total + item.product.price * item.quantity, 0);
+                console.log(orderItems,"orderItems");
+                
                 // Create the payment record
+                console.log(data.redirectUrl,"data.redirectUrl in repositroy");
                 const payment = await tx.payment.create({
                     data: {
                         orderId: data.orderId,
                         paymentMethod: data.paymentMethod,
-                        amount: amount,
+                        amount: data.amount,
                         status: data.status,
                         phonepe_transactionId: data.phonepe_transactionId,
                         phonepe_signature: data.phonepe_signature,
