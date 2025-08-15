@@ -1,6 +1,7 @@
 import { CouponRepository } from "../repositories/CouponRepository";
 import logger from "../utils/logger";
-
+import { IOrder } from "../interfaces/orders.interface";
+import { UserCouponRepository } from "../repositories/UserCouponRepository";
 export class CouponService {
     static async createCoupon(coupon: any) {
         logger.info("Entering createCoupon service", { coupon });
@@ -47,6 +48,58 @@ export class CouponService {
             } else {
                 logger.error("Unknown error in getAllCoupons service");
                 throw new Error("Something went wrong in getAllCoupons");
+            }
+        }
+    }
+    static async useCoupon(code:string,userId:number,order:IOrder){
+        logger.info("Entering useCoupon service", { code });
+        try {
+            const coupon = await CouponRepository.findCouponByType(code);
+            if(!coupon){
+                throw new Error("Coupon not found");
+            }   
+            if(coupon.endDate && coupon.endDate < new Date()){
+                throw new Error("Coupon expired");
+            }
+            if(coupon.minOrderValue && coupon.minOrderValue > order.totalAmount){
+                throw new Error("Order amount is less than minimum order value");
+            }
+            
+            const updatedCoupon=await CouponRepository.updateCoupon(coupon.id,{timesUsed:(coupon.timesUsed||0)+1});
+
+            const userCoupon=await UserCouponRepository.createUserCoupon(userId,coupon.id,coupon.usageLimitPerUser ?? null);
+            logger.info("Exiting useCoupon service", { coupon });
+            return coupon;
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in useCoupon service", error.message);
+                throw error;
+            } else {
+                logger.error("Unknown error in useCoupon service");
+                throw new Error("Something went wrong in useCoupon");
+            }
+        }
+    }
+    static async removeCoupon(code:string,userId:number,order:IOrder){
+        logger.info("Entering removeCoupon service", { code });
+        try {
+            const coupon = await CouponRepository.findCouponByType(code);
+            if(!coupon){
+                throw new Error("Coupon not found");
+            }
+            if(coupon.timesUsed>0){
+                const updatedCoupon=await CouponRepository.updateCoupon(coupon.id,{timesUsed:(coupon.timesUsed||0)-1});
+            }
+            const userCoupon=await UserCouponRepository.removeUserCoupon(userId,coupon.id);
+            logger.info("Exiting removeCoupon service", { coupon });
+            return coupon;
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in removeCoupon service", error.message);
+                throw error;
+            } else {
+                logger.error("Unknown error in removeCoupon service");
+                throw new Error("Something went wrong in removeCoupon");
             }
         }
     }

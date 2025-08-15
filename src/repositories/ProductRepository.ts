@@ -12,6 +12,7 @@ export class ProductRepository {
         price: number; 
         stock: number; 
         imageUrl?: string; 
+        metadata?: string; 
         salePrice: number; 
         categoryId: number; 
         validity?: number; 
@@ -26,6 +27,7 @@ export class ProductRepository {
                 price: data.price,
                 stock: data.stock,
                 imageUrl: data.imageUrl,
+                metadata: data.metadata,
                 salePrice: data.salePrice,
                 validity: data.validity,
                 type: data.type,
@@ -56,11 +58,13 @@ export class ProductRepository {
     }
 
     // Get all products
-    static async findAllProducts() {
+    static async findAllProducts(skip: number, take: number) {
         logger.info("Entering findAllProducts repository method");
 
         const products = await prisma.product.findMany({
             orderBy: { createdAt: "desc" },
+            skip,
+            take,
         });
 
         logger.info("Exiting findAllProducts repository method");
@@ -75,7 +79,8 @@ export class ProductRepository {
             description?: string; 
             price?: number; 
             stock?: number; 
-            imageUrl?: string; 
+            imageUrl?: string;
+            metadata?: string; 
             salePrice?: number; 
             categoryId?: number; 
             validity?: number; 

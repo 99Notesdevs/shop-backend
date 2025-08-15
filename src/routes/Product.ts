@@ -3,7 +3,7 @@ import { ProductController } from '../controllers/product';
 
 const productRouter = Router();
 
-// Route to get all products
+// Route to get all products?skip&take
 productRouter.get('/', ProductController.getAllProducts);
 
 // Route to get a product by ID

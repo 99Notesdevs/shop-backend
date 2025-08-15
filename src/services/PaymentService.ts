@@ -69,8 +69,9 @@ export class PaymentService {
 
         const response = await axios.request(option);
         logger.info("Exiting statusCheck service", { phonepe_transaction_id });
-        const updateStatus = await PaymentsRepository.updatePayment({transactionId: phonepe_transaction_id, status: String(response.data.success), validity: val, userId});
-        return response.data.success;
+        
+        const updateStatus = await PaymentsRepository.updatePayment({transactionId: phonepe_transaction_id, status: String(response.data.state), validity: val, userId});
+        return response.data.state;
     }
 
     static async initiatePayment(data: IPayload, userId: number) {
@@ -154,7 +155,7 @@ export class PaymentService {
               total +
               ((item.product?.salePrice ?? item.price) * item.quantity),
             0
-          );                  
+        );                  
         const shippingCharge = orderItems.reduce((max: number, item: any) => Math.max(max, item.product.shippingCharges), 0);
         const transactionId = crypto.randomUUID();
         data.phonepe_transaction_id = transactionId;
