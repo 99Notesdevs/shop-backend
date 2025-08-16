@@ -57,6 +57,9 @@ export class CouponService {
         try {
             const coupon = await CouponRepository.findCouponByType(code);
             const order=await OrderRepository.getOrderById(orderId);
+            if(!order){
+                throw new Error("Order not found");
+            }
             if(!coupon){
                 throw new Error("Coupon not found");
             }   

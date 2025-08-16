@@ -15,8 +15,8 @@ export class OrderRepository {
     // Fetch an order by ID
     static async getOrderById(id: number) {
         logger.info(`Fetching order with id ${id} from repository`);
-        const order = await prisma.order.findMany({
-            where: { id ,status: "Completed"},
+        const order = await prisma.order.findUnique({
+            where: { id },
         });
         if (!order) {
             logger.error(`Order with id ${id} not found`);
