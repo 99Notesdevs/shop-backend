@@ -10,7 +10,9 @@ import addressRouter from "./Address";
 import productRatingRouter from "./productRating";
 import emailRouter from "./email";
 import couponRouter from "./Coupon";
-const router = Router();
+import offersRouter from "./Offers";
+import searchRouter from "./search";
+const router = Router();  
 
 // health check api
 router.get("/healthCheck", async (req, res) => {
@@ -29,4 +31,6 @@ router.use("/address", addressRouter);
 router.use("/productRating", productRatingRouter);
 router.use("/email", emailRouter);
 router.use("/coupon", couponRouter);
+router.use("/offers", offersRouter);
+router.use("/search", searchRouter);
 export default router;

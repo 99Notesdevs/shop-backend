@@ -71,7 +71,7 @@ export class PaymentsRepository {
                     where: { orderId: data.orderId },
                     include: {
                         product: {
-                            select: { id: true, stock: true }
+                            select: { id: true, stock: true,salePrice: true, shippingCharges: true }
                         }
                     }
                 });
@@ -100,8 +100,10 @@ export class PaymentsRepository {
                         throw new Error(`Failed to update stock for product ID: ${item.productId}`);
                     }
                 }
-
+                console.log(orderItems,"orderItems");
+                
                 // Create the payment record
+                console.log(data.redirectUrl,"data.redirectUrl in repositroy");
                 const payment = await tx.payment.create({
                     data: {
                         orderId: data.orderId,
@@ -120,7 +122,7 @@ export class PaymentsRepository {
                     where: { id: data.orderId },
                     data: { status: "Completed" }
                 });
-
+                
                 return payment;
             });
             

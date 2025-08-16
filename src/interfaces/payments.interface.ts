@@ -18,6 +18,7 @@ export interface IPayload {
     mobileNumber: string;
     amount: number;
     orderId: number;
+    couponcode?: string;
     validity?: number;
     quantity?: number;
     phonepe_transaction_id?: string;

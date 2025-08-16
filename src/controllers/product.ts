@@ -6,10 +6,10 @@ export class ProductController {
     // Create a new product
     static async createProduct(req: Request, res: Response) {
         try {
-            const { name, description, price, stock, imageUrl, categoryId, validity, salePrice } = req.body;
+            const { name, description, price, stock, imageUrl, metadata, categoryId, validity, salePrice, type } = req.body;
 
-            if (!name || !description || !price || !stock || !categoryId) {
-                throw new Error("All required fields (name, description, price, stock, categoryId) must be provided");
+            if (!name || !description || !price || !stock || !categoryId || !type) {
+                throw new Error("All required fields (name, description, price, stock, categoryId, type) must be provided");
             }
 
             const newProduct = await ProductService.createProduct({
@@ -18,9 +18,11 @@ export class ProductController {
                 price: parseFloat(price),
                 stock: parseInt(stock),
                 imageUrl,
+                metadata,
                 categoryId: parseInt(categoryId),
                 validity: validity ? parseInt(validity) : undefined,
                 salePrice: parseFloat(salePrice),
+                type,
             });
 
             logger.info("Product created successfully", { productId: newProduct.id });
@@ -66,7 +68,8 @@ export class ProductController {
     // Get all products
     static async getAllProducts(req: Request, res: Response) {
         try {
-            const products = await ProductService.getAllProducts();
+            const { skip, take } = req.query;
+            const products = await ProductService.getAllProducts(Number(skip), Number(take));
 
             logger.info("Products retrieved successfully");
             res.status(200).json({ success: true, data: products });
@@ -85,7 +88,7 @@ export class ProductController {
     static async updateProduct(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const { name, description, price, stock, imageUrl, categoryId, salePrice } = req.body;
+            const { name, description, price, stock, imageUrl, metadata, categoryId, validity, salePrice, type } = req.body;
 
             if (!id) {
                 throw new Error("Product ID is required");
@@ -97,8 +100,11 @@ export class ProductController {
                 price: price ? parseFloat(price) : undefined,
                 stock: stock ? parseInt(stock) : undefined,
                 imageUrl,
+                metadata,
                 categoryId: categoryId ? parseInt(categoryId) : undefined,
+                validity: validity ? parseInt(validity) : undefined,
                 salePrice: parseFloat(salePrice),
+                type,
             });
 
             logger.info("Product updated successfully", { productId: updatedProduct.id });

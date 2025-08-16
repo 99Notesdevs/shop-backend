@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { CouponService } from "../services/CouponService";
+import { IOrder, OrderStatus } from "../interfaces/orders.interface";
 import logger from "../utils/logger";
 
 export class CouponController {
@@ -32,6 +33,60 @@ export class CouponController {
             } else {
                 logger.error("Unknown error in getAllCoupons controller");
                 res.status(500).json({ success: false, message: "Something went wrong in getAllCoupons" });
+            }
+        }
+    }
+    static async getCouponByType(req: Request, res: Response) {
+        logger.info("Entering getCouponByType controller", { req });
+        try {
+            const coupon = await CouponService.getCouponByType(req.params.code);
+            logger.info("Exiting getCouponByType controller", { coupon });
+            res.status(200).json({ success: true, data: coupon });
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in getCouponByType controller", error.message);
+                res.status(400).json({ success: false, message: error.message });
+            } else {
+                logger.error("Unknown error in getCouponByType controller");
+                res.status(500).json({ success: false, message: "Something went wrong in getCouponByType" });
+            }
+        }
+    }
+    static async useCoupon(req: Request, res: Response) {
+        logger.info("Entering useCoupon controller", { req });
+        const code=req.params.code;
+        const userId=req.body.authUser;
+        const orderId=req.body.orderId;
+        try {
+            const coupon = await CouponService.useCoupon(code,userId,orderId);
+            logger.info("Exiting useCoupon controller", { coupon });
+            res.status(200).json({ success: true, data: coupon });
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in useCoupon controller", error.message);
+                res.status(400).json({ success: false, message: error.message });
+            } else {
+                logger.error("Unknown error in useCoupon controller");
+                res.status(500).json({ success: false, message: "Something went wrong in useCoupon" });
+            }
+        }
+    }
+    static async removeCoupon(req: Request, res: Response) {
+        logger.info("Entering removeCoupon controller", { req });
+        try {
+            const code=req.params.code;
+            const userId=req.body.authUser;
+            const order=req.body.order;
+            const coupon = await CouponService.removeCoupon(code,userId,order);
+            logger.info("Exiting removeCoupon controller", { coupon });
+            res.status(200).json({ success: true, data: coupon });
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error("Error in removeCoupon controller", error.message);
+                res.status(400).json({ success: false, message: error.message });
+            } else {
+                logger.error("Unknown error in removeCoupon controller");
+                res.status(500).json({ success: false, message: "Something went wrong in removeCoupon" });
             }
         }
     }

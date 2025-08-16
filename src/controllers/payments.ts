@@ -25,6 +25,7 @@ export class PaymentsController {
     static async initiatePaymentProduct(req: Request, res: Response) {
         const paymentData = req.body;
         const userId = req.body.authUser;
+        
         logger.info("Entering initiatePaymentProduct controller", { paymentData });
         try {
             const redirectUrl = await PaymentService.initiatePaymentProduct(paymentData, userId);
@@ -116,10 +117,11 @@ export class PaymentsController {
             }
             const status = await PaymentService.statusCheck(id, parseInt(val), parseInt(userId));
             logger.info("Exiting checkPaymentStatus controller", { id });
-            if (status) {
+            if (status === 'SUCCESS') {
                 // res.json({ success: true, message: "Payment successful" });
                 res.redirect(`${process.env.SUCCESS_URL}`);
             } else {
+                
                 // res.json({ success: false, message: "Payment failed" });
                 res.redirect(`${process.env.FAILURE_URL}`);
             }
