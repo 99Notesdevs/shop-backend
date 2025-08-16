@@ -5,6 +5,7 @@ import crypto from "crypto";
 import axios from "axios";
 import paymentsRouter from "../routes/Payments";
 import { OrderRepository } from "../repositories/OrderRepository";
+import { CouponService } from "./CouponService";
 
 export class PaymentService {
     static async getAllPayments() {
@@ -155,12 +156,25 @@ export class PaymentService {
               total +
               ((item.product?.salePrice ?? item.price) * item.quantity),
             0
-        );                  
-        const shippingCharge = orderItems.reduce((max: number, item: any) => Math.max(max, item.product.shippingCharges), 0);
+        );  
+        let shippingCharge = 0;                
+        if(amount<500){
+            shippingCharge = orderItems.reduce((max: number, item: any) => Math.max(max, item.product.shippingCharges), 0);
+        }
         const transactionId = crypto.randomUUID();
         data.phonepe_transaction_id = transactionId;
         data.status = "PENDING";
-
+        let finalAmount=amount;
+        if(data.couponcode){
+            const coupon=await CouponService.useCoupon(data.couponcode,userId,data.orderId);
+            if(coupon){
+                if(coupon.type=="PERCENTAGE"){
+                    finalAmount=amount-(amount*coupon.discount/100);
+                }else {
+                    finalAmount=amount-coupon.discount;
+                }
+            }
+        }
         const paymentPayload = {
             merchantId: process.env.MERCHANT_ID,
             merchantTransactionId: transactionId,
@@ -170,7 +184,7 @@ export class PaymentService {
             callbackMode: "GET",
             redirectUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}`,
             redirectMode: "GET",
-            amount: (amount + shippingCharge)*100,
+            amount: finalAmount*100,
             paymentInstrument: {
                 type: "PAY_PAGE",
             },
@@ -199,7 +213,7 @@ export class PaymentService {
             orderId: data.orderId,
             productId: data.productId,
             paymentMethod: "PHONEPE",
-            amount: (amount + shippingCharge)*100,
+            amount: finalAmount*100,
             status: "PENDING",
             quantity: data.quantity,
             phonepe_transactionId: transactionId,

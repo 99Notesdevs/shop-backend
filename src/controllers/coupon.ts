@@ -56,9 +56,9 @@ export class CouponController {
         logger.info("Entering useCoupon controller", { req });
         const code=req.params.code;
         const userId=req.body.authUser;
-        const order=req.body.order;
+        const orderId=req.body.orderId;
         try {
-            const coupon = await CouponService.useCoupon(code,userId,order);
+            const coupon = await CouponService.useCoupon(code,userId,orderId);
             logger.info("Exiting useCoupon controller", { coupon });
             res.status(200).json({ success: true, data: coupon });
         } catch (error: unknown) {

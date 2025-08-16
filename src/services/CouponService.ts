@@ -2,6 +2,7 @@ import { CouponRepository } from "../repositories/CouponRepository";
 import logger from "../utils/logger";
 import { IOrder } from "../interfaces/orders.interface";
 import { UserCouponRepository } from "../repositories/UserCouponRepository";
+import { OrderRepository } from "../repositories/OrderRepository";
 export class CouponService {
     static async createCoupon(coupon: any) {
         logger.info("Entering createCoupon service", { coupon });
@@ -51,10 +52,11 @@ export class CouponService {
             }
         }
     }
-    static async useCoupon(code:string,userId:number,order:IOrder){
+    static async useCoupon(code:string,userId:number,orderId:number){
         logger.info("Entering useCoupon service", { code });
         try {
             const coupon = await CouponRepository.findCouponByType(code);
+            const order=await OrderRepository.getOrderById(orderId);
             if(!coupon){
                 throw new Error("Coupon not found");
             }   
