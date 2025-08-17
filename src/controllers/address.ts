@@ -5,7 +5,7 @@ import logger from "../utils/logger";
 export class AddressController {
     static async createAddress(req: Request, res: Response) {
         try {
-            const userId = req.body.authUser; // Assuming user is attached by auth middleware
+            const userId = parseInt(req.authUser!); // Assuming user is attached by auth middleware
             if (!userId) {
                 return res.status(401).json({ success: false, error: 'Unauthorized' });
             }
@@ -55,7 +55,7 @@ export class AddressController {
 
     static async updateAddress(req: Request, res: Response) {
         try {
-            const userId = req.body.authUser;
+            const userId = parseInt(req.authUser!);
             const addressId = parseInt(req.params.id);
             
             if (!userId) {
@@ -90,7 +90,7 @@ export class AddressController {
 
     static async deleteAddress(req: Request, res: Response) {
         try {
-            const userId = req.body.authUser;
+            const userId = parseInt(req.authUser!);
             const addressId = parseInt(req.params.id);
             
             if (!userId) {
@@ -110,7 +110,7 @@ export class AddressController {
 
     static async getOrderAddresses(req: Request, res: Response) {
         try {
-            const userId = req.body.authUser;
+            const userId = parseInt(req.authUser!);
             const orderId = parseInt(req.params.orderId);
             
             if (!userId) {

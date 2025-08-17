@@ -26,7 +26,7 @@ export class ProductRatingController {
     static async createProductRating(req: Request, res: Response) {
         try {
             console.log("req.body", req.body);
-            const userId=req.body.authUser;
+            const userId = req.authUser!;
             const { productId } = req.params;
             const {rating} = req.body;
             console.log("userId", userId);
@@ -42,7 +42,7 @@ export class ProductRatingController {
     }
     static async updateProductRating(req: Request, res: Response) {
         try {
-            const userId=req.body.authUser;
+            const userId = req.authUser!;
             const { productId } = req.params;
             const productRating = req.body;
             const productRatings = await ProductRatingService.updateProductRating(Number(productId), Number(userId), productRating);
@@ -54,7 +54,7 @@ export class ProductRatingController {
     }
     static async deleteProductRating(req: Request, res: Response) {
         try {
-            const userId=req.body.authUser;
+            const userId = req.authUser!;
             const { productId } = req.params;
             const productRatings = await ProductRatingService.deleteProductRating(Number(productId), Number(userId));
             res.json({success:true,data:productRatings});

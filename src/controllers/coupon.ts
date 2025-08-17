@@ -55,7 +55,7 @@ export class CouponController {
     static async useCoupon(req: Request, res: Response) {
         logger.info("Entering useCoupon controller", { req });
         const code=req.params.code;
-        const userId=req.body.authUser;
+        const userId=parseInt(req.authUser!);
         const orderId=req.body.orderId;
         try {
             const coupon = await CouponService.useCoupon(code,userId,orderId);
@@ -75,7 +75,7 @@ export class CouponController {
         logger.info("Entering removeCoupon controller", { req });
         try {
             const code=req.params.code;
-            const userId=req.body.authUser;
+            const userId=parseInt(req.authUser!);
             const order=req.body.order;
             const coupon = await CouponService.removeCoupon(code,userId,order);
             logger.info("Exiting removeCoupon controller", { coupon });

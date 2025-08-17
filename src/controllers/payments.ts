@@ -6,7 +6,7 @@ import { EmailService } from "../utils/EmailService";
 export class PaymentsController {
     static async initiatePayment(req: Request, res: Response) {
         const paymentData = req.body;
-        const userId = req.body.authUser;
+        const userId = parseInt(req.authUser!);
         logger.info("Entering initiatePayment controller", { paymentData });
         try {
             const redirectUrl = await PaymentService.initiatePayment(paymentData, userId);
@@ -24,8 +24,8 @@ export class PaymentsController {
     }
     static async initiatePaymentProduct(req: Request, res: Response) {
         const paymentData = req.body;
-        const userId = req.body.authUser;
-        
+        const userId = parseInt(req.authUser!);
+
         logger.info("Entering initiatePaymentProduct controller", { paymentData });
         try {
             const redirectUrl = await PaymentService.initiatePaymentProduct(paymentData, userId);

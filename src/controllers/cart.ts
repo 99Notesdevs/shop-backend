@@ -92,8 +92,8 @@ export class CartController {
     static async updateCartItem(req: Request, res: Response) {
         try {
             // Get user ID from the request body (set by auth middleware)
-            const userId = req.body.authUser;
-            
+            const userId = parseInt(req.authUser!);
+
             if (!userId) {
                 logger.error('No user ID found in request');
                 return res.status(401).json({ 
@@ -129,7 +129,7 @@ export class CartController {
     static async removeCartItem(req: Request, res: Response) {
         try {
             // Get user ID from the request body (set by auth middleware)
-            const userId = req.body.authUser;
+            const userId = parseInt(req.authUser!);
             
             if (!userId) {
                 logger.error('No user ID found in request');
@@ -164,8 +164,8 @@ export class CartController {
     static async clearCart(req: Request, res: Response) {
         try {
             // Get user ID from the request body (set by auth middleware)
-            const userId = req.body.authUser;
-            
+            const userId = parseInt(req.authUser!);
+
             if (!userId) {
                 logger.error('No user ID found in request');
                 return res.status(401).json({ 

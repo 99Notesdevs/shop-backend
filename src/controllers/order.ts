@@ -69,7 +69,7 @@ export class OrderController {
                 products: orderData.products,
                 totalAmount: parseFloat(orderData.totalAmount),
                 status: orderData.status,
-                userId: parseInt(req.body.authUser) || parseInt(orderData.userId),
+                userId: parseInt(req.authUser!) || parseInt(orderData.userId),
                 billingAddress: orderData.billingAddress,
                 shippingAddress: orderData.shippingAddress
             }
