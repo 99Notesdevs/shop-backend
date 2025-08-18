@@ -11,10 +11,11 @@ export class AddressController {
             }
             
             // Extract only the fields that belong to the Address model
-            const { addressLine1, addressLine2, city, state, zipCode, country, phoneNumber } = req.body;
+            const { name, addressLine1, addressLine2, city, state, zipCode, country, phoneNumber } = req.body;
             
             const addressData = {
                 userId,
+                name,
                 addressLine1,
                 addressLine2,
                 city,
@@ -66,8 +67,9 @@ export class AddressController {
             }
 
             // Only allow updating specific fields
-            const { addressLine1, addressLine2, city, state, zipCode, country, phoneNumber } = req.body;
+            const { name, addressLine1, addressLine2, city, state, zipCode, country, phoneNumber } = req.body;
             const updateData = {
+                name,
                 addressLine1,
                 addressLine2,
                 city,

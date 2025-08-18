@@ -4,6 +4,7 @@ import logger from "../utils/logger";
 interface Address {
     id?: number;
     userId: number;
+    name: string;
     addressLine1: string;
     addressLine2: string;
     city: string;
