@@ -52,21 +52,21 @@ export class CouponService {
             }
         }
     }
-    static async useCoupon(code:string,userId:number,orderId:number){
+    static async useCoupon(code:string,userId:number,totalAmount:number){
         logger.info("Entering useCoupon service", { code });
         try {
             const coupon = await CouponRepository.findCouponByType(code);
-            const order=await OrderRepository.getOrderById(orderId);
-            if(!order){
-                throw new Error("Order not found");
-            }
+            // const order=await OrderRepository.getOrderById(orderId);
+            // if(!order){
+            //     throw new Error("Order not found");
+            // }
             if(!coupon){
                 throw new Error("Coupon not found");
             }   
             if(coupon.endDate && coupon.endDate < new Date()){
                 throw new Error("Coupon expired");
             }
-            if(coupon.minOrderValue && coupon.minOrderValue > order.totalAmount){
+            if(coupon.minOrderValue && coupon.minOrderValue > totalAmount){
                 throw new Error("Order amount is less than minimum order value");
             }
             

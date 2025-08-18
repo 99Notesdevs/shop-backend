@@ -8,8 +8,8 @@ const router = Router();
 router.post("/",  CouponController.createCoupon);
 router.get("/", CouponController.getAllCoupons);
 router.get("/:code", CouponController.getCouponByType);
-router.get('/use/:code',authenticate, authorizeRoles(["User"]), CouponController.useCoupon)
-router.get('/remove/:code',authenticate, authorizeRoles(["User"]), CouponController.removeCoupon)
+router.post('/use/:code',authenticate, authorizeRoles(["User"]), CouponController.useCoupon)
+router.post('/remove/:code',authenticate, authorizeRoles(["User"]), CouponController.removeCoupon)
 router.get("/:id", CouponController.getCouponById);
 router.put("/:id", CouponController.updateCoupon);
 router.delete("/:id", CouponController.deleteCoupon);
