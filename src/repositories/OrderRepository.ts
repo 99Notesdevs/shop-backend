@@ -7,7 +7,14 @@ export class OrderRepository {
     // Fetch all orders
     static async getAllOrders() {
         logger.info("Fetching all orders from repository");
-        const orders = await prisma.order.findMany();
+        const orders = await prisma.order.findMany({
+            include: {
+                billingAddress: true,
+                shippingAddress: true,
+                user: true,
+                orderItems: true,
+            },
+        });
         logger.info("Fetched all orders from repository");
         return orders;
     }
@@ -31,7 +38,26 @@ export class OrderRepository {
         logger.info("Entering getUserOrders repository", { userId });
 
         const orders = await prisma.order.findMany({
-            where: { userId ,status: "Completed"},
+            where: { userId },
+            include: {
+                orderItems: {
+                    include: {
+                        product: {
+                            select: { 
+                                id: true, 
+                                name: true, 
+                                price: true, 
+                                imageUrl: true 
+                            }
+                        }
+                    }
+                },
+                shippingAddress: true,
+                billingAddress: true
+            },
+            orderBy: {
+                orderDate: 'desc'
+            }
         });
 
         logger.info("Exiting getUserOrders repository", { userId });
@@ -113,7 +139,7 @@ export class OrderRepository {
             where: { orderId: id },
             include: {
                 product: {
-                    select: { id: true, stock: true,salePrice: true, shippingCharges: true }
+                    select: { id: true, stock: true, price: true, imageUrl: true }
                 }
             }
         });

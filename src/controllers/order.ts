@@ -70,8 +70,8 @@ export class OrderController {
                 totalAmount: parseFloat(orderData.totalAmount),
                 status: orderData.status,
                 userId: parseInt(req.authUser!) || parseInt(orderData.userId),
-                billingAddress: orderData.billingAddress,
-                shippingAddress: orderData.shippingAddress
+                billingAddressId: orderData.billingAddressId,
+                shippingAddressId: orderData.shippingAddressId
             }
             const newOrder = await OrderService.createOrder(data);
             logger.info("Order created successfully", { orderId: newOrder.id });
