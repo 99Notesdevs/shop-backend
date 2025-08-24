@@ -3,11 +3,6 @@ import logger from "../utils/logger";
 
 
 export class ShippingRepository {
-    // static async getAllShippingOptions() {
-    //     logger.info("Fetching all shipping options");
-    //     const shippingOptions = await prisma.shipping.findMany();
-    //     return shippingOptions;
-    // }
 
     static async addShippingDetails(data: any) {
         logger.info("Adding shipping details");
