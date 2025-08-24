@@ -5,7 +5,8 @@ import logger from "../utils/logger";
 export class ProductRatingController {
     static async getProductRatingsByUserIdForProduct(req: Request, res: Response) {
         try {
-            const { productId, userId } = req.params;
+            const { productId } = req.params;
+            const userId = req.authUser!;
             const productRatings = await ProductRatingService.getProductRatingsByUserIdForProduct(Number(userId), Number(productId));
             res.json({success:true,data:productRatings});
         } catch (error) {
@@ -23,17 +24,33 @@ export class ProductRatingController {
             res.status(500).json({ error: "Internal server error" });
         }
     }
+    static async getProductReviews(req: Request, res: Response) {
+        try {
+            const { productId } = req.params;
+            const productReviews = await ProductRatingService.getProductReviews(Number(productId));
+            res.json({success:true,data:productReviews});
+        } catch (error) {
+            logger.error("Error in getProductReviews controller: ", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+    static async getProductReviewByUserIdForProduct(req: Request, res: Response) {
+        try {
+            const { productId } = req.params;
+            const userId = req.authUser!;
+            const productReviews = await ProductRatingService.getProductReviewByUserIdForProduct(Number(userId), Number(productId));
+            res.json({success:true,data:productReviews});
+        } catch (error) {
+            logger.error("Error in getProductReviewByUserIdForProduct controller: ", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
     static async createProductRating(req: Request, res: Response) {
         try {
-            console.log("req.body", req.body);
             const userId = req.authUser!;
             const { productId } = req.params;
-            const {rating} = req.body;
-            console.log("userId", userId);
-            console.log("productId", productId);
-            console.log("rating", rating);
+            const { rating }  = req.body;
             const productRatings = await ProductRatingService.createProductRating(Number(productId), Number(userId), Number(rating));
-            console.log("productRatings", productRatings);
             res.json({success:true,data:productRatings});
         } catch (error) {
             logger.error("Error in createProductRating controller: ", error);
@@ -44,11 +61,23 @@ export class ProductRatingController {
         try {
             const userId = req.authUser!;
             const { productId } = req.params;
-            const productRating = req.body;
-            const productRatings = await ProductRatingService.updateProductRating(Number(productId), Number(userId), productRating);
+            const { rating }  = req.body;
+            const productRatings = await ProductRatingService.updateProductRating(Number(productId), Number(userId), Number(rating));
             res.json({success:true,data:productRatings});
         } catch (error) {
             logger.error("Error in updateProductRating controller: ", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+    static async updateProductReview(req: Request, res: Response) {
+        try {
+            const userId = req.authUser!;
+            const { productId } = req.params;
+            const { review }  = req.body;
+            const productRatings = await ProductRatingService.updateProductReview(Number(productId), Number(userId), review);
+            res.json({success:true,data:productRatings});
+        } catch (error) {
+            logger.error("Error in updateProductReview controller: ", error);
             res.status(500).json({ error: "Internal server error" });
         }
     }
