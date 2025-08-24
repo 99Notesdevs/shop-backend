@@ -69,10 +69,11 @@ export class PaymentService {
         }
 
         const response = await axios.request(option);
+        console.log("response of status check", response.data);
         logger.info("Exiting statusCheck service", { phonepe_transaction_id });
         
         const updateStatus = await PaymentsRepository.updatePayment({transactionId: phonepe_transaction_id, status: String(response.data.state), validity: val, userId});
-        return response.data.state;
+        return response.data.data.state;
     }
 
     static async initiatePayment(data: IPayload, userId: number) {
@@ -168,7 +169,7 @@ export class PaymentService {
         if(data.couponcode){
             const coupon=await CouponService.useCoupon(data.couponcode,userId,data.orderId);
             if(coupon){
-                if(coupon.type=="PERCENTAGE"){
+                if(coupon.type=="percentage"){
                     finalAmount=amount-(amount*coupon.discount/100);
                 }else {
                     finalAmount=amount-coupon.discount;

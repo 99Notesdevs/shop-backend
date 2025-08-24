@@ -118,10 +118,10 @@ export class PaymentsRepository {
                 });
 
                 // Update order status
-                await tx.order.update({
-                    where: { id: data.orderId },
-                    data: { status: "Completed" }
-                });
+                // await tx.order.update({
+                //     where: { id: data.orderId },
+                //     data: { status: "Completed" }
+                // });
                 
                 return payment;
             });

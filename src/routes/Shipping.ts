@@ -14,6 +14,9 @@ shippingRouter.post('/:orderId', authenticate, authorizeRoles(["Admin"]), Shippi
 // Route to update shipping details
 shippingRouter.put('/:orderId', authenticate, authorizeRoles(["Admin"]), ShippingController.updateShippingDetails);
 
+// Route to update status of shipping
+shippingRouter.put('/status/:orderId', authenticate, authorizeRoles(["Admin"]), ShippingController.updateShippingStatus);
+
 // Route to delete shipping details
 shippingRouter.delete('/:orderId', authenticate, authorizeRoles(["Admin"]), ShippingController.deleteShippingDetails);
 export default shippingRouter;
