@@ -14,6 +14,13 @@ export class ShippingService {
         const shippingDetails = await ShippingRepository.updateShippingDetails(data);
         return shippingDetails;
     }
+
+    static async updateShippingStatus(data: any) {
+        logger.info("Updating shipping status");
+        const shippingDetails = await ShippingRepository.updateShippingStatus(data);
+        return shippingDetails;
+    }
+    
     static async trackShipping(orderId: number) {
         logger.info("Tracking shipping");
         const shippingDetails = await ShippingRepository.trackShipping(orderId);

@@ -42,7 +42,26 @@ export class ShippingRepository {
         });
         return shippingDetails;
     }
-
+    
+    static async updateShippingStatus(data: any) {
+        logger.info("Updating shipping status");
+        const shipping = await prisma.shipping.findFirst({
+            where: { orderId: data.orderId }
+        });
+        if (!shipping) {
+            logger.error("Shipping details not found");
+            return null;
+        }
+        const shippingDetails = await prisma.shipping.update({
+            where: {
+                id: shipping.id,  // Use the id for the update
+            },
+            data: {
+                status: data.status,
+            }
+        });
+        return shippingDetails;
+    }
     static async trackShipping(orderId: number) {
         logger.info("Tracking shipping");
         const shippingDetails = await prisma.shipping.findMany({

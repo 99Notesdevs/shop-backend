@@ -116,9 +116,11 @@ export class PaymentsController {
                 throw new Error("Invalid userId parameter");
             }
             const status = await PaymentService.statusCheck(id, parseInt(val), parseInt(userId));
+            console.log("status of payment", status);
             logger.info("Exiting checkPaymentStatus controller", { id });
-            if (status === 'SUCCESS') {
+            if (status === 'COMPLETED') {
                 // res.json({ success: true, message: "Payment successful" });
+
                 res.redirect(`${process.env.SUCCESS_URL}`);
             } else {
                 
