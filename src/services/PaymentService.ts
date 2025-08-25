@@ -181,9 +181,9 @@ export class PaymentService {
             merchantTransactionId: transactionId,
             merchantUserId: `USER_${data.orderId}`,
             mobileNumber: '9690620146',
-            callbackUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}`,
+            callbackUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}&orderId=${data.orderId}`,
             callbackMode: "GET",
-            redirectUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}`,
+            redirectUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}&orderId=${data.orderId}`,
             redirectMode: "GET",
             amount: finalAmount*100,
             paymentInstrument: {
