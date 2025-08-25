@@ -66,11 +66,12 @@ export class OrderController {
             const orderData = req.body;
             const data = {
                 orderDate: new Date(orderData.orderDate),
+                products: orderData.products,
                 totalAmount: parseFloat(orderData.totalAmount),
                 status: orderData.status,
-                userId: parseInt(req.body.authUser) || parseInt(orderData.userId),
-                billingAddress: orderData.billingAddress,
-                shippingAddress: orderData.shippingAddress
+                userId: parseInt(req.authUser!) || parseInt(orderData.userId),
+                billingAddressId: orderData.billingAddressId,
+                shippingAddressId: orderData.shippingAddressId
             }
             const newOrder = await OrderService.createOrder(data);
             logger.info("Order created successfully", { orderId: newOrder.id });

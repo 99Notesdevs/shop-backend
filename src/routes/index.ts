@@ -8,12 +8,16 @@ import wishlistRouter from "./WIshlist";
 import shippingRouter from "./Shipping";
 import addressRouter from "./Address";
 import productRatingRouter from "./productRating";
-const router = Router();
+import emailRouter from "./email";
+import couponRouter from "./Coupon";
+import offersRouter from "./Offers";
+import searchRouter from "./search";
+const router = Router();  
 
 // health check api
 router.get("/healthCheck", async (req, res) => {
     res.status(200).json({
-      message: "vansh is asshole",
+      message: "vansh is a ceo",
     });
 });
 router.use("/category", categoryRouter);
@@ -25,4 +29,8 @@ router.use("/wishlist", wishlistRouter);
 router.use("/shipping", shippingRouter);
 router.use("/address", addressRouter);
 router.use("/productRating", productRatingRouter);
+router.use("/email", emailRouter);
+router.use("/coupon", couponRouter);
+router.use("/offers", offersRouter);
+router.use("/search", searchRouter);
 export default router;

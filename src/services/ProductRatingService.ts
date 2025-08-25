@@ -15,17 +15,35 @@ export class ProductRatingService {
         logger.info("Exiting getGlobalProductRating service");
         return globalProductRating;
     }
+    static async getProductReviews(productId: number) {
+        logger.info("Entering getProductReviews service");
+        const productReviews = await ProductRatingRepository.getProductReviews(productId);
+        logger.info("Exiting getProductReviews service");
+        return productReviews;
+    }
+    static async getProductReviewByUserIdForProduct(userId: number, productId: number) {
+        logger.info("Entering getProductReviewByUserIdForProduct service");
+        const productReviews = await ProductRatingRepository.getProductReviewByUserIdForProduct(userId, productId);
+        logger.info("Exiting getProductReviewByUserIdForProduct service");
+        return productReviews;
+    }
     static async createProductRating(productId: number, userId: number, rating: number) {
         logger.info("Entering createProductRating service");
         const createdProductRating = await ProductRatingRepository.createProductRating(productId, userId, rating);
         logger.info("Exiting createProductRating service");
         return createdProductRating;
     }
-    static async updateProductRating(productId: number, userId: number, productRating: IProductRating) {
+    static async updateProductRating(productId: number, userId: number, rating: number) {
         logger.info("Entering updateProductRating service");
-        const updatedProductRating = await ProductRatingRepository.updateProductRating(productId, userId, productRating);
+        const updatedProductRating = await ProductRatingRepository.updateProductRating(productId, userId, rating);
         logger.info("Exiting updateProductRating service");
         return updatedProductRating;
+    }
+    static async updateProductReview(productId: number, userId: number, review: string) {
+        logger.info("Entering updateProductReview service");
+        const updatedProductReview = await ProductRatingRepository.updateProductReview(productId, userId, review);
+        logger.info("Exiting updateProductReview service");
+        return updatedProductReview;
     }
     static async deleteProductRating(productId: number, userId: number) {
         logger.info("Entering deleteProductRating service");

@@ -11,12 +11,12 @@ cartRouter.get('/user/:userId', CartController.getCartByUserId);
 cartRouter.post('/:cartId', CartController.addItemToCart);
 
 // Route to update item in cart ?productId & quantity
-cartRouter.put('/:cartItemId', CartController.updateCartItem);
+cartRouter.put('/:cartItemId',authenticate,authorizeRoles(["User"]), CartController.updateCartItem);
 
 // Route to remove item from cart
-cartRouter.delete('/:cartId/:cartItemId', CartController.removeCartItem);
+cartRouter.delete('/:cartId/:cartItemId',authenticate,authorizeRoles(["User"]), CartController.removeCartItem);
 
 // Route to clear cart
-cartRouter.delete('/:cartId', CartController.clearCart);
+cartRouter.delete('/:cartId',authenticate,authorizeRoles(["User"]), CartController.clearCart);
 
 export default cartRouter;

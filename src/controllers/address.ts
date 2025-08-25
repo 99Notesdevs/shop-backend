@@ -5,16 +5,17 @@ import logger from "../utils/logger";
 export class AddressController {
     static async createAddress(req: Request, res: Response) {
         try {
-            const userId = req.body.authUser; // Assuming user is attached by auth middleware
+            const userId = parseInt(req.authUser!); // Assuming user is attached by auth middleware
             if (!userId) {
                 return res.status(401).json({ success: false, error: 'Unauthorized' });
             }
             
             // Extract only the fields that belong to the Address model
-            const { addressLine1, addressLine2, city, state, zipCode, country, phoneNumber } = req.body;
+            const { name, addressLine1, addressLine2, city, state, zipCode, country, phoneNumber } = req.body;
             
             const addressData = {
                 userId,
+                name,
                 addressLine1,
                 addressLine2,
                 city,
@@ -55,7 +56,7 @@ export class AddressController {
 
     static async updateAddress(req: Request, res: Response) {
         try {
-            const userId = req.body.authUser;
+            const userId = parseInt(req.authUser!);
             const addressId = parseInt(req.params.id);
             
             if (!userId) {
@@ -66,8 +67,9 @@ export class AddressController {
             }
 
             // Only allow updating specific fields
-            const { addressLine1, addressLine2, city, state, zipCode, country, phoneNumber } = req.body;
+            const { name, addressLine1, addressLine2, city, state, zipCode, country, phoneNumber } = req.body;
             const updateData = {
+                name,
                 addressLine1,
                 addressLine2,
                 city,
@@ -90,7 +92,7 @@ export class AddressController {
 
     static async deleteAddress(req: Request, res: Response) {
         try {
-            const userId = req.body.authUser;
+            const userId = parseInt(req.authUser!);
             const addressId = parseInt(req.params.id);
             
             if (!userId) {
@@ -110,7 +112,7 @@ export class AddressController {
 
     static async getOrderAddresses(req: Request, res: Response) {
         try {
-            const userId = req.body.authUser;
+            const userId = parseInt(req.authUser!);
             const orderId = parseInt(req.params.orderId);
             
             if (!userId) {

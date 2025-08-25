@@ -1,3 +1,4 @@
+import { error } from "console";
 import { prisma } from "../config/prisma";
 import { IOrder, OrderStatus } from "../interfaces/orders.interface";
 import logger from "../utils/logger";
@@ -6,7 +7,14 @@ export class OrderRepository {
     // Fetch all orders
     static async getAllOrders() {
         logger.info("Fetching all orders from repository");
-        const orders = await prisma.order.findMany();
+        const orders = await prisma.order.findMany({
+            include: {
+                billingAddress: true,
+                shippingAddress: true,
+                user: true,
+                orderItems: true,
+            },
+        });
         logger.info("Fetched all orders from repository");
         return orders;
     }
@@ -31,6 +39,25 @@ export class OrderRepository {
 
         const orders = await prisma.order.findMany({
             where: { userId },
+            include: {
+                orderItems: {
+                    include: {
+                        product: {
+                            select: { 
+                                id: true, 
+                                name: true, 
+                                price: true, 
+                                imageUrl: true 
+                            }
+                        }
+                    }
+                },
+                shippingAddress: true,
+                billingAddress: true
+            },
+            orderBy: {
+                orderDate: 'desc'
+            }
         });
 
         logger.info("Exiting getUserOrders repository", { userId });
@@ -38,8 +65,10 @@ export class OrderRepository {
     }
 
     // Create a new order
-    static async createOrder(data: IOrder) {
+    static async createOrder(data: IOrder & { products: Array<{ orderId: number; productId: number; quantity: number; price: number, product: { price: number } }> }) {
         logger.info("Creating new order in repository");
+        
+        // First, create the order
         const order = await prisma.order.create({
             data: {
                 orderDate: new Date(data.orderDate),
@@ -49,9 +78,21 @@ export class OrderRepository {
                 shippingAddress: data.shippingAddressId ? { connect: { id: data.shippingAddressId } } : undefined,
                 user: {
                     connect: { id: data.userId },
-                },
+                }
             }
         });
+        console.log("order",data.products);
+        await prisma.orderItem.createMany({
+            data: data.products.map(item => ({
+              orderId: order.id,
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.product.price
+            }))
+          });
+          
+          
+        
         logger.info("Created new order in repository", { orderId: order.id });
         return order;
     }
@@ -92,7 +133,23 @@ export class OrderRepository {
         logger.info(`Fetched tracking info for order with id ${id} from repository`);
         return trackingInfo;
     }
-
+    static async getorderitems(id: number) {
+        logger.info(`Fetching order items for order with id ${id} from repository`);
+        const orderItems = await prisma.orderItem.findMany({
+            where: { orderId: id },
+            include: {
+                product: {
+                    select: { id: true, stock: true, price: true, imageUrl: true }
+                }
+            }
+        });
+        if (!orderItems) {
+            logger.error(`Order items for order with id ${id} not found`);
+            return null;
+        }
+        logger.info(`Fetched order items for order with id ${id} from repository`);
+        return orderItems;
+    }
     // Delete an order by ID
     static async deleteOrder(id: number) {
         logger.info(`Deleting order with id ${id} from repository`);

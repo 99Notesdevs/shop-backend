@@ -24,9 +24,9 @@ export class CartService {
         return cartItem;
     }
 
-    static async updateCartItem(cartItemId: number, productId: number, quantity: number) {
+    static async updateCartItem(cartItemId: number, quantity: number) {
         logger.info('Updating cart item');
-        const updatedCartItem = await CartRepository.updateCartItem(cartItemId, productId, quantity);
+        const updatedCartItem = await CartRepository.updateCartItem(cartItemId, quantity);
         if (!updatedCartItem) {
             logger.error('Error updating cart item');
             throw new Error('Error updating cart item');

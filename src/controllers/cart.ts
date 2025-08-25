@@ -92,8 +92,8 @@ export class CartController {
     static async updateCartItem(req: Request, res: Response) {
         try {
             // Get user ID from the request body (set by auth middleware)
-            const userId = req.body.authUser;
-            
+            const userId = parseInt(req.authUser!);
+
             if (!userId) {
                 logger.error('No user ID found in request');
                 return res.status(401).json({ 
@@ -103,10 +103,15 @@ export class CartController {
             }
 
             const cartItemId = req.params.cartItemId;
-            const productId = req.params.productId;
-            const quantity = req.params.quantity;
+            const quantity = req.query.quantity as string;
+            if (!quantity) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'quantity is required as query parameter' 
+                });
+            }
             logger.info('Updating cart item');
-            const updatedCartItem = await CartService.updateCartItem(parseInt(cartItemId), parseInt(productId), parseInt(quantity));
+            const updatedCartItem = await CartService.updateCartItem(parseInt(cartItemId), parseInt(quantity));
             logger.info('Cart item updated successfully');
             res.status(201).json({success: true, data: updatedCartItem});
         } catch (error: unknown) {
@@ -124,7 +129,7 @@ export class CartController {
     static async removeCartItem(req: Request, res: Response) {
         try {
             // Get user ID from the request body (set by auth middleware)
-            const userId = req.body.authUser;
+            const userId = parseInt(req.authUser!);
             
             if (!userId) {
                 logger.error('No user ID found in request');
@@ -159,8 +164,8 @@ export class CartController {
     static async clearCart(req: Request, res: Response) {
         try {
             // Get user ID from the request body (set by auth middleware)
-            const userId = req.body.authUser;
-            
+            const userId = parseInt(req.authUser!);
+
             if (!userId) {
                 logger.error('No user ID found in request');
                 return res.status(401).json({ 
