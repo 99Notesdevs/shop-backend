@@ -9,7 +9,7 @@ const router = Router();
 router.post('/', authenticate, authorizeRoles(["User"]), AddressController.createAddress);
 
 // Get all addresses for the authenticated user
-router.get('/:userId', AddressController.getUserAddresses);
+router.get('/', authenticate, authorizeRoles(["User"]), AddressController.getUserAddresses);
 
 // Update an address
 router.put('/:id', authenticate, authorizeRoles(["User"]), AddressController.updateAddress);
