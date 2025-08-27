@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // 2. Then handle COR
 app.use(cors({
-  origin: ['http://main.main.local:3000', "http://tests.main.local:5173", "http://shop.main.local:5173", "http://localhost:44275", "http://13.126.229.93:5173", "http://13.126.229.93"],
+  origin: ['http://main.main.local:3000', "http://tests.main.local:5173", "http://shop.main.local:5173", "http://auth.main.local:5174", "http://localhost:44275", "http://13.126.229.93:5173", "http://13.126.229.93"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "X-Auth-Type", 'x-auth-type'],

@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/PaymentService";
 import logger from "../utils/logger";
+import { EmailService } from "../utils/EmailService";
+import { OrderRepository } from "../repositories/OrderRepository";
+import { OrderStatus } from "../interfaces/orders.interface";
 
 export class PaymentsController {
     static async initiatePayment(req: Request, res: Response) {
         const paymentData = req.body;
-        const userId = req.body.authUser;
+        const userId = parseInt(req.authUser!);
         logger.info("Entering initiatePayment controller", { paymentData });
         try {
             const redirectUrl = await PaymentService.initiatePayment(paymentData, userId);
@@ -23,7 +26,8 @@ export class PaymentsController {
     }
     static async initiatePaymentProduct(req: Request, res: Response) {
         const paymentData = req.body;
-        const userId = req.body.authUser;
+        const userId = parseInt(req.authUser!);
+
         logger.info("Entering initiatePaymentProduct controller", { paymentData });
         try {
             const redirectUrl = await PaymentService.initiatePaymentProduct(paymentData, userId);
@@ -114,12 +118,19 @@ export class PaymentsController {
                 throw new Error("Invalid userId parameter");
             }
             const status = await PaymentService.statusCheck(id, parseInt(val), parseInt(userId));
+            console.log("status of payment", status);
             logger.info("Exiting checkPaymentStatus controller", { id });
-            if (status) {
+            if (status === 'COMPLETED') {
                 // res.json({ success: true, message: "Payment successful" });
+                const order=await OrderRepository.updateOrderStatus(parseInt(id), OrderStatus.Completed);
                 res.redirect(`${process.env.SUCCESS_URL}`);
-            } else {
+            } else if(status === 'PENDING'){
+                const order=await OrderRepository.updateOrderStatus(parseInt(id), OrderStatus.Pending);
                 // res.json({ success: false, message: "Payment failed" });
+                res.redirect(`${process.env.FAILURE_URL}`);
+            }
+            else{
+                const order=await OrderRepository.updateOrderStatus(parseInt(id), OrderStatus.Failed);
                 res.redirect(`${process.env.FAILURE_URL}`);
             }
         } catch (error: unknown) {

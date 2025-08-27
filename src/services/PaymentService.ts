@@ -5,6 +5,7 @@ import crypto from "crypto";
 import axios from "axios";
 import paymentsRouter from "../routes/Payments";
 import { OrderRepository } from "../repositories/OrderRepository";
+import { CouponService } from "./CouponService";
 
 export class PaymentService {
     static async getAllPayments() {
@@ -68,9 +69,11 @@ export class PaymentService {
         }
 
         const response = await axios.request(option);
+        console.log("response of status check", response.data);
         logger.info("Exiting statusCheck service", { phonepe_transaction_id });
-        const updateStatus = await PaymentsRepository.updatePayment({transactionId: phonepe_transaction_id, status: String(response.data.success), validity: val, userId});
-        return response.data.success;
+        
+        const updateStatus = await PaymentsRepository.updatePayment({transactionId: phonepe_transaction_id, status: String(response.data.state), validity: val, userId});
+        return response.data.data.state;
     }
 
     static async initiatePayment(data: IPayload, userId: number) {
@@ -144,21 +147,45 @@ export class PaymentService {
     }
     static async initiatePaymentProduct(data: IPayload, userId: number) {
         logger.info("Entering initiatePaymentProduct service", { data });
-
+        const orderItems = await OrderRepository.getorderitems(data.orderId);
+        if (!orderItems) {
+            logger.error("Order items not found for order with id " + data.orderId);
+            throw new Error("Order items not found for order with id " + data.orderId);
+        }
+        const amount = orderItems.reduce(
+            (total: number, item: any) =>
+              total +
+              ((item.product?.salePrice ?? item.price) * item.quantity),
+            0
+        );  
+        let shippingCharge = 0;                
+        if(amount<500){
+            shippingCharge = orderItems.reduce((max: number, item: any) => Math.max(max, item.product.shippingCharges), 0);
+        }
         const transactionId = crypto.randomUUID();
         data.phonepe_transaction_id = transactionId;
         data.status = "PENDING";
-
+        let finalAmount=amount;
+        if(data.couponcode){
+            const coupon=await CouponService.useCoupon(data.couponcode,userId,data.orderId);
+            if(coupon){
+                if(coupon.type=="percentage"){
+                    finalAmount=amount-(amount*coupon.discount/100);
+                }else {
+                    finalAmount=amount-coupon.discount;
+                }
+            }
+        }
         const paymentPayload = {
             merchantId: process.env.MERCHANT_ID,
             merchantTransactionId: transactionId,
             merchantUserId: `USER_${data.orderId}`,
             mobileNumber: '9690620146',
-            callbackUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}`,
+            callbackUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}&orderId=${data.orderId}`,
             callbackMode: "GET",
-            redirectUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}`,
+            redirectUrl: `${process.env.REDIRECT_URL}?id=${transactionId}&val=${data.validity}&uid=${userId}&orderId=${data.orderId}`,
             redirectMode: "GET",
-            amount: data.amount * 100,
+            amount: finalAmount*100,
             paymentInstrument: {
                 type: "PAY_PAGE",
             },
@@ -187,8 +214,9 @@ export class PaymentService {
             orderId: data.orderId,
             productId: data.productId,
             paymentMethod: "PHONEPE",
-            amount: data.amount,
+            amount: finalAmount*100,
             status: "PENDING",
+            quantity: data.quantity,
             phonepe_transactionId: transactionId,
             phonepe_signature: checksum,
             paymentDate: new Date(),
@@ -197,6 +225,7 @@ export class PaymentService {
             const response = await axios.request(options);
             const url = response.data.data.instrumentResponse.redirectInfo.url;
             data.redirectUrl = url;
+            console.log("We are here");
             console.log(data.redirectUrl,"data.redirectUrl");
             const newPayment = await PaymentsRepository.createPaymentProduct({...paymentData, redirectUrl: url});
             logger.info("Exiting initiatePaymentProduct service", { paymentId: newPayment.id });

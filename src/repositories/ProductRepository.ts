@@ -1,9 +1,23 @@
 import { prisma } from "../config/prisma";
 import logger from "../utils/logger";
 
+// Define the ProductType as a union of the possible values
+type ProductType = 'softCopy' | 'hardCopy';
+
 export class ProductRepository {
     // Create a new product
-    static async createProduct(data: { name: string; description: string; price: number; stock: number; imageUrl?: string; categoryId: number, validity?: number }) {
+    static async createProduct(data: { 
+        name: string; 
+        description: string; 
+        price: number; 
+        stock: number; 
+        imageUrl?: string; 
+        metadata?: string; 
+        salePrice: number; 
+        categoryId: number; 
+        validity?: number; 
+        type: ProductType 
+    }) {
         logger.info("Entering createProduct repository method", { name: data.name, categoryId: data.categoryId });
 
         const newProduct = await prisma.product.create({
@@ -13,7 +27,10 @@ export class ProductRepository {
                 price: data.price,
                 stock: data.stock,
                 imageUrl: data.imageUrl,
-                validity: data.validity ? data.validity : undefined,
+                metadata: data.metadata,
+                salePrice: data.salePrice,
+                validity: data.validity,
+                type: data.type,
                 category: {
                     connect: { id: data.categoryId },
                 },
@@ -41,11 +58,13 @@ export class ProductRepository {
     }
 
     // Get all products
-    static async findAllProducts() {
+    static async findAllProducts(skip: number, take: number) {
         logger.info("Entering findAllProducts repository method");
 
         const products = await prisma.product.findMany({
             orderBy: { createdAt: "desc" },
+            skip,
+            take,
         });
 
         logger.info("Exiting findAllProducts repository method");
@@ -53,12 +72,26 @@ export class ProductRepository {
     }
 
     // Update a product by ID
-    static async updateProduct(id: number, data: { name?: string; description?: string; price?: number; stock?: number; imageUrl?: string; categoryId?: number }) {
+    static async updateProduct(
+        id: number, 
+        data: { 
+            name?: string; 
+            description?: string; 
+            price?: number; 
+            stock?: number; 
+            imageUrl?: string;
+            metadata?: string; 
+            salePrice?: number; 
+            categoryId?: number; 
+            validity?: number; 
+            type: ProductType;
+        }
+    ) {
         logger.info("Entering updateProduct repository method", { productId: id, data });
 
         const updatedProduct = await prisma.product.update({
             where: { id },
-            data,
+            data
         });
 
         logger.info("Exiting updateProduct repository method", { productId: updatedProduct.id });
@@ -90,5 +123,21 @@ export class ProductRepository {
 
         logger.info("Exiting findCategoryById repository method", { categoryId });
         return category;
+    }
+    static async search(query: string) {
+        logger.info("Entering search repository method", { query });
+
+        const products = await prisma.product.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: "insensitive" } },
+                    { description: { contains: query, mode: "insensitive" } },
+                    { category: { name: { contains: query, mode: "insensitive" } } }
+                ]
+            }
+        });
+
+        logger.info("Exiting search repository method");
+        return products;
     }
 }

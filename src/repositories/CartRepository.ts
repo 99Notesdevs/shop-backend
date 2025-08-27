@@ -36,12 +36,11 @@ export class CartRepository {
         return cart;
     }
 
-    static async updateCartItem(cartItemId: number, productId: number, quantity: number) {
+    static async updateCartItem(cartItemId: number, quantity: number) {
         logger.info('Updating cart item for user repository');
         const cartItem = await prisma.cartItem.update({
             where: { id: cartItemId },
             data: {
-                productId,
                 quantity
             }
         });

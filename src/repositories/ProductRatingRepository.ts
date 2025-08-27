@@ -1,6 +1,5 @@
 import { prisma } from "../config/prisma";
 import logger from "../utils/logger";
-import { IProductRating } from "../interfaces/productRating.interface";
 
 export class ProductRatingRepository {
     static async getProductRatingsByUserIdForProduct(userId: number, productId: number) {
@@ -11,6 +10,24 @@ export class ProductRatingRepository {
         logger.info("Exiting getAllProductRatings repository method");
         const rating = productRatings?.rating;
         return rating;
+    }
+    static async getProductReviews(productId: number) {
+        logger.info("Entering getProductReview repository method");
+        const productReviews = await prisma.productRating.findMany({
+            where: { productId },
+            select: { userId: true, review: true }
+        });
+        logger.info("Exiting getProductReview repository method");
+        return productReviews;
+    }
+    static async getProductReviewByUserIdForProduct(userId: number, productId: number) {
+        logger.info("Entering getProductReview repository method");
+        const productReviews = await prisma.productRating.findMany({
+            where: { userId, productId },
+            select: { userId: true, review: true }
+        });
+        logger.info("Exiting getProductReview repository method");
+        return productReviews;
     }
     static async getGlobalProductRating(productId: number) {
         logger.info("Entering getGlobalProductRating repository method");
@@ -27,43 +44,20 @@ export class ProductRatingRepository {
 
     static async createProductRating(productId: number, userId: number, rating: number) {
         logger.info("Entering createProductRating repository method");
-        
-        // First, try to find if a rating already exists
-        const existingRating = await prisma.productRating.findFirst({
-            where: {
+        // Create new rating
+        const createdProductRating = await prisma.productRating.create({
+            data: {
                 productId,
-                userId
+                userId,
+                rating
             }
         });
-    
-        let createdProductRating;
-        
-        if (existingRating) {
-            // Update existing rating
-            createdProductRating = await prisma.productRating.update({
-                where: {
-                    id: existingRating.id
-                },
-                data: {
-                    rating
-                }
-            });
-        } else {
-            // Create new rating
-            createdProductRating = await prisma.productRating.create({
-                data: {
-                    productId,
-                    userId,
-                    rating
-                }
-            });
-        }
         
         logger.info("Exiting createProductRating repository method");
         return createdProductRating;
     }
 
-    static async updateProductRating(productId: number, userId: number, productRating: IProductRating) {
+    static async updateProductRating(productId: number, userId: number, rating: number) {
         logger.info("Entering updateProductRating repository method");
         // First find the rating id using productId and userId
         const existingRating = await prisma.productRating.findFirst({
@@ -77,10 +71,37 @@ export class ProductRatingRepository {
 
         const updatedProductRating = await prisma.productRating.update({
             where: { id: existingRating.id },
-            data: productRating
+            data: { rating }
         });
         logger.info("Exiting updateProductRating repository method");
         return updatedProductRating;
+    }
+
+    static async updateProductReview(productId: number, userId: number, review: string) {
+        logger.info("Entering updateProductRating repository method");
+        // First find the rating id using productId and userId
+        const existingRating = await prisma.productRating.findFirst({
+            where: { 
+                productId,
+                userId 
+            }
+        });
+    
+        if (!existingRating) {
+            throw new Error('Rating not found');
+        }
+    
+        // Then update using the found id
+        const updatedReview = await prisma.productRating.update({
+            where: { 
+                id: existingRating.id 
+            },
+            data: { 
+                review 
+            }
+        });
+        logger.info("Exiting updateProductRating repository method");
+        return updatedReview;
     }
 
     static async deleteProductRating(productId: number, userId: number) {
