@@ -17,7 +17,7 @@ export class ShippingController {
                 res.status(400).json({ success: false, message: 'Missing required fields' });
             }
             const data = {
-                orderId: orderId,
+                orderId: parseInt(orderId),
                 shippingAddress: shippingAddress,
                 trackingNumber: trackingNumber,
                 carrier: carrier,
@@ -46,7 +46,7 @@ export class ShippingController {
 
     static async updateShippingStatus(req: Request, res: Response) {
         try {
-            const orderId = req.params.orderId;
+            const orderId = parseInt(req.params.orderId);
             const status = req.body.status;
    
             if (!orderId || !status ) {

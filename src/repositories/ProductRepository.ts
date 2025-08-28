@@ -41,6 +41,20 @@ export class ProductRepository {
         return newProduct;
     }
 
+    // Find products by category ID with pagination
+    static async findProductsByCategory(categoryId: number, skip: number, take: number) {
+        logger.info("Entering findProductsByCategory repository method", { categoryId, skip, take });
+
+        const products = await prisma.product.findMany({
+            where: { categoryId },
+            skip,
+            take,
+        });
+
+        logger.info("Exiting findProductsByCategory repository method", { categoryId, skip, take });
+        return products;
+    }
+
     // Find a product by ID
     static async findProductById(id: number) {
         logger.info("Entering findProductById repository method", { productId: id });
@@ -97,7 +111,22 @@ export class ProductRepository {
         logger.info("Exiting updateProduct repository method", { productId: updatedProduct.id });
         return updatedProduct;
     }
+    static async updateProductStock(
+        id: number, 
+        stock: number 
+    ) {
+        logger.info("Entering updateProduct repository method", { productId: id, stock });
 
+        const updatedProduct = await prisma.product.update({
+            where: { id },
+            data: {
+                stock: { decrement: stock }
+            }
+        });
+
+        logger.info("Exiting updateProduct repository method", { productId: updatedProduct.id });
+        return updatedProduct;
+    }
     // Delete a product by ID
     static async deleteProduct(id: number) {
         logger.info("Entering deleteProduct repository method", { productId: id });

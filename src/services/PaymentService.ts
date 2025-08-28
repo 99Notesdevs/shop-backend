@@ -152,30 +152,35 @@ export class PaymentService {
             logger.error("Order items not found for order with id " + data.orderId);
             throw new Error("Order items not found for order with id " + data.orderId);
         }
+        console.log("orderItems",orderItems);
         const amount = orderItems.reduce(
             (total: number, item: any) =>
               total +
               ((item.product?.salePrice ?? item.price) * item.quantity),
             0
         );  
+        console.log("amount",amount);
         let shippingCharge = 0;                
         if(amount<500){
             shippingCharge = orderItems.reduce((max: number, item: any) => Math.max(max, item.product.shippingCharges), 0);
         }
+        console.log("shippingCharge",shippingCharge);
         const transactionId = crypto.randomUUID();
         data.phonepe_transaction_id = transactionId;
         data.status = "PENDING";
-        let finalAmount=amount;
+        let finalAmount=amount + shippingCharge;
+        console.log("finalAmount",finalAmount);
         if(data.couponcode){
             const coupon=await CouponService.useCoupon(data.couponcode,userId,data.orderId);
             if(coupon){
                 if(coupon.type=="percentage"){
-                    finalAmount=amount-(amount*coupon.discount/100);
+                    finalAmount=finalAmount-(finalAmount*coupon.discount/100);
                 }else {
-                    finalAmount=amount-coupon.discount;
+                    finalAmount=finalAmount-coupon.discount;
                 }
             }
         }
+        console.log("finalAmount",finalAmount);
         const paymentPayload = {
             merchantId: process.env.MERCHANT_ID,
             merchantTransactionId: transactionId,
