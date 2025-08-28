@@ -41,6 +41,20 @@ export class ProductRepository {
         return newProduct;
     }
 
+    // Find products by category ID with pagination
+    static async findProductsByCategory(categoryId: number, skip: number, take: number) {
+        logger.info("Entering findProductsByCategory repository method", { categoryId, skip, take });
+
+        const products = await prisma.product.findMany({
+            where: { categoryId },
+            skip,
+            take,
+        });
+
+        logger.info("Exiting findProductsByCategory repository method", { categoryId, skip, take });
+        return products;
+    }
+
     // Find a product by ID
     static async findProductById(id: number) {
         logger.info("Entering findProductById repository method", { productId: id });

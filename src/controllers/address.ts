@@ -38,15 +38,15 @@ export class AddressController {
 
     static async getUserAddresses(req: Request, res: Response) {
         try {
-            const userId = req.params.userId;
+            const userId = parseInt(req.authUser!);
             if (!userId) {
                 return res.status(401).json({ success: false, error: 'Unauthorized' });
             }
 
-            const addresses = await AddressService.getUserAddresses(Number(userId));
-            res.status(200).json({ 
-                success: true, 
-                data: addresses 
+            const addresses = await AddressService.getUserAddresses(userId);
+            res.status(200).json({
+                success: true,
+                data: addresses
             });
         } catch (error: any) {
             logger.error('Error fetching user addresses:', error);

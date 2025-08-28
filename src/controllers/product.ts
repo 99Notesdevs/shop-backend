@@ -38,6 +38,31 @@ export class ProductController {
         }
     }
 
+    // Get products by category ID with pagination
+    static async getProductsByCategory(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { skip, take } = req.query;
+
+            const products = await ProductService.getProductsByCategory(
+                parseInt(id),
+                Number(skip),
+                Number(take)
+            );
+            
+            if(!products) {
+                logger.warn("No products found for the given category", { categoryId: id });
+            } else {
+                logger.info("Products retrieved successfully", { categoryId: id });
+            }
+
+            res.status(200).json({ success: true, data: products });
+        } catch (error: unknown) {
+            logger.error("Unknown error in getProductsByCategory controller");
+            res.status(500).json({ success: false, message: error instanceof Error ? error.message : "Something went wrong in getProductsByCategory" });
+        }
+    }
+
     // Get a product by ID
     static async getProductById(req: Request, res: Response) {
         try {

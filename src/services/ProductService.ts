@@ -19,6 +19,16 @@ export class ProductService {
         return newProduct;
     }
 
+    // Get a list of products by category ID with pagination
+    static async getProductsByCategory(categoryId: number, skip: number = 0, take: number = 10) {
+        logger.info("Entering getProductsByCategory service", { categoryId, skip, take });
+
+        const products = await ProductRepository.findProductsByCategory(categoryId, skip, take);
+
+        logger.info("Exiting getProductsByCategory service", { categoryId, skip, take });
+        return products;
+    }
+
     // Get a product by ID
     static async getProductById(id: number) {
         logger.info("Entering getProductById service", { productId: id });
