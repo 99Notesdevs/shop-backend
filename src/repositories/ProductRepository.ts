@@ -97,7 +97,22 @@ export class ProductRepository {
         logger.info("Exiting updateProduct repository method", { productId: updatedProduct.id });
         return updatedProduct;
     }
+    static async updateProductStock(
+        id: number, 
+        stock: number 
+    ) {
+        logger.info("Entering updateProduct repository method", { productId: id, stock });
 
+        const updatedProduct = await prisma.product.update({
+            where: { id },
+            data: {
+                stock: { decrement: stock }
+            }
+        });
+
+        logger.info("Exiting updateProduct repository method", { productId: updatedProduct.id });
+        return updatedProduct;
+    }
     // Delete a product by ID
     static async deleteProduct(id: number) {
         logger.info("Entering deleteProduct repository method", { productId: id });

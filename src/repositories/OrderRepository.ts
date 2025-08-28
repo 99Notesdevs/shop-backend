@@ -139,7 +139,7 @@ export class OrderRepository {
             where: { orderId: id },
             include: {
                 product: {
-                    select: { id: true, stock: true, price: true, imageUrl: true }
+                    select: { id: true, stock: true, price: true, imageUrl: true, salePrice: true, shippingCharges: true }
                 }
             }
         });
