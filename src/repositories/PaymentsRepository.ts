@@ -86,18 +86,17 @@ export class PaymentsRepository {
                         throw new Error(`Insufficient stock for product ID: ${item.productId}`);
                     }
 
-                    const updatedProduct = await tx.product.update({
+                    const updatedProduct = await prisma.product.findUnique({
                         where: { 
-                            id: item.productId,
-                            stock: { gte: item.quantity }
-                        },
-                        data: {
-                            stock: { decrement: item.quantity }
+                            id: item.productId
                         }
                     });
-
                     if (!updatedProduct) {
-                        throw new Error(`Failed to update stock for product ID: ${item.productId}`);
+                        throw new Error(`No product found with ID: ${item.productId}`);
+                    }
+                    const updatedStock = updatedProduct.stock - item.quantity;
+                    if (updatedStock < 0) {
+                        throw new Error(`Insufficient stock for product ID: ${item.productId}`);
                     }
                 }
                 console.log(orderItems,"orderItems");

@@ -4,6 +4,7 @@ import logger from "../utils/logger";
 import { EmailService } from "../utils/EmailService";
 import { OrderRepository } from "../repositories/OrderRepository";
 import { OrderStatus } from "../interfaces/orders.interface";
+import { ProductRepository } from "../repositories/ProductRepository";
 
 export class PaymentsController {
     static async initiatePayment(req: Request, res: Response) {
@@ -104,7 +105,7 @@ export class PaymentsController {
 
     static async checkPaymentStatus(req: Request, res: Response) {
         console.log("sending post request", req.query);
-        const { id, val, uid } = req.query;
+        const { id, val, uid ,orderId} = req.query;
         const userId = uid;
         logger.info("Entering checkPaymentStatus controller", { id });
         try {
@@ -117,20 +118,36 @@ export class PaymentsController {
             if(typeof userId !== 'string') {
                 throw new Error("Invalid userId parameter");
             }
+            if(typeof orderId !== 'string') {
+                throw new Error("Invalid orderId parameter");
+            }
             const status = await PaymentService.statusCheck(id, parseInt(val), parseInt(userId));
             console.log("status of payment", status);
             logger.info("Exiting checkPaymentStatus controller", { id });
             if (status === 'COMPLETED') {
                 // res.json({ success: true, message: "Payment successful" });
-                const order=await OrderRepository.updateOrderStatus(parseInt(id), OrderStatus.Completed);
+                const order=await OrderRepository.updateOrderStatus(parseInt(orderId), OrderStatus.Completed);
+                const currentOrderItems=await OrderRepository.getorderitems(parseInt(orderId));
+                if (!currentOrderItems) {
+                    throw new Error("No items found in the order");
+                }
+                for (const item of currentOrderItems) {
+
+                    const updatedProduct = await ProductRepository.updateProductStock(item.productId, item.quantity);
+                    if (!updatedProduct) {
+                        throw new Error(`Failed to update stock for product ID: ${item.productId}`);
+                    }
+                }
                 res.redirect(`${process.env.SUCCESS_URL}`);
             } else if(status === 'PENDING'){
-                const order=await OrderRepository.updateOrderStatus(parseInt(id), OrderStatus.Pending);
+                const order=await OrderRepository.updateOrderStatus(parseInt(orderId), OrderStatus.Pending);
+                
                 // res.json({ success: false, message: "Payment failed" });
                 res.redirect(`${process.env.FAILURE_URL}`);
             }
             else{
-                const order=await OrderRepository.updateOrderStatus(parseInt(id), OrderStatus.Failed);
+                const order=await OrderRepository.updateOrderStatus(parseInt(orderId), OrderStatus.Failed);
+                
                 res.redirect(`${process.env.FAILURE_URL}`);
             }
         } catch (error: unknown) {
