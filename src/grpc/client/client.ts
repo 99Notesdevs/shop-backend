@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import path from 'path';
 
-const grpcHost = process.env.GRPC_HOST || 'localhost';
+const grpcHost = process.env.GRPC_HOST || '20.40.45.204';
 const grpcPort = process.env.GRPC_PORT || 50051;
 const address = `${grpcHost}:${grpcPort}`;
 
