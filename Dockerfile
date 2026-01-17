@@ -1,23 +1,29 @@
-# Use official Node.js LTS image
 FROM node:18-alpine
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files
 COPY package.json package-lock.json ./
-RUN npm install
 
+# Install ALL dependencies (including dev for TypeScript build)
+RUN npm ci --ignore-scripts
+
+# Install global packages
 RUN npm install -g typescript ts-node nodemon
 
-# Copy the entire app
-COPY . .
-
-# Generate Prisma Client Prior
+# Copy prisma schema
+COPY prisma ./prisma/
 RUN npx prisma generate
 
-# Expose server port (Match it with your app)
+# Copy source code
+COPY . .
+
+# Build TypeScript
+RUN npm run build
+
+# Rebuild native modules
+RUN npm rebuild || true
+
 EXPOSE 5550
 
-# Start the server
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
