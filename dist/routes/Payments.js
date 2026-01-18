@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const payments_1 = require("../controllers/payments");
+const authenticateMiddleware_1 = require("../middlewares/authenticateMiddleware");
+const authorizeRoles_1 = require("../middlewares/authorizeRoles");
+const paymentsRouter = (0, express_1.Router)();
+paymentsRouter.post('/status', payments_1.PaymentsController.checkPaymentStatus);
+paymentsRouter.get("/:id", authenticateMiddleware_1.authenticate, (0, authorizeRoles_1.authorizeRoles)(["User"]), payments_1.PaymentsController.getPaymentDetails);
+paymentsRouter.post('/create-order', authenticateMiddleware_1.authenticate, (0, authorizeRoles_1.authorizeRoles)(["User"]), payments_1.PaymentsController.initiatePayment);
+paymentsRouter.post('/create-order-product', authenticateMiddleware_1.authenticate, (0, authorizeRoles_1.authorizeRoles)(["User"]), payments_1.PaymentsController.initiatePaymentProduct);
+// paymentsRouter.post('/callback', PaymentsController.handlePaymentCallback);
+// paymentsRouter.put('/:id/status', authenticate, authorizeRoles(["User"]), PaymentsController.updatePaymentStatus);
+exports.default = paymentsRouter;
